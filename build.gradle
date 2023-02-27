@@ -18,6 +18,11 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    implementation 'org.hibernate:hibernate-core:5.3.7.Final'
+    implementation 'org.springframework:spring-orm:5.3.6'
 }
 
 test {
