@@ -1,10 +1,11 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.2'
+    id 'org.springframework.boot' version '2.7.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'war'
 }
 
-group 'dev.treenod'
+group 'dev.test'
 version '1.0-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -14,6 +15,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     compileOnly 'org.projectlombok:lombok'
@@ -28,8 +30,20 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
     implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws-secrets-manager-config:2.2.6.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'com.h2database:h2:1.4.199'
 }
 
 test {
     useJUnitPlatform()
+}
+
+bootWar {
+    archiveBaseName='dev-test'
+    archiveFileName='dev-test.war'
+    archiveVersion='1.0.0'
 }

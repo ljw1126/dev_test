@@ -1,4 +1,4 @@
-package dev.treenod.controller;
+package dev.test.controller;
 
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -21,6 +21,9 @@ public class IndexController {
     public String index(Model model, HttpSession session) {
         model.addAttribute("profile", getProfile());
         model.addAttribute("sessionId", session.getId());
+        model.addAttribute("userName", env.getProperty("employee"));
+        model.addAttribute("company", env.getProperty("company"));
+        model.addAttribute("department", env.getProperty("department"));
         return "index";
     }
 

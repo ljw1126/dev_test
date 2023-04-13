@@ -1,4 +1,4 @@
-package dev.treenod.config;
+package dev.test.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

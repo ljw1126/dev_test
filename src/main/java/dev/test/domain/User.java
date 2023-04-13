@@ -1,4 +1,4 @@
-package dev.treenod.domain;
+package dev.test.domain;
 
 import javax.persistence.*;
 

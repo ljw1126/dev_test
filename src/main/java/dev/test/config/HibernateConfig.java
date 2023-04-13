@@ -1,4 +1,4 @@
-package dev.treenod.config;
+package dev.test.config;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@PropertySource("classpath:/datasource.properties")
+@PropertySource("classpath:/application.properties")
 public class HibernateConfig {
 
     public HibernateConfig() {
