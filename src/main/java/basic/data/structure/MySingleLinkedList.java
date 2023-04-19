@@ -8,8 +8,8 @@ public class MySingleLinkedList<T> {
         T value;
         Node<T> next;
 
-        public Node(T t) {
-            this.value = t;
+        public Node(T value) {
+            this.value = value;
             this.next = null;
         }
     }
@@ -25,18 +25,18 @@ public class MySingleLinkedList<T> {
                 node = node.next;
             }
 
-            node.next = new Node(data);
+            node.next = new Node<>(data);
         }
     }
 
     // 전체 노드 출력
     public void printAll(){
-        if(this.head != null) {
+        if(head != null) {
             Node<T> node = this.head;
             System.out.println(node.value);
             while(node.next != null) {
+                System.out.println(node.next.value);
                 node = node.next;
-                System.out.println(node.value);
             }
         }
     }
@@ -45,38 +45,34 @@ public class MySingleLinkedList<T> {
     public Node<T> search(T data){
         Node<T> result = null;
 
-        if(this.head != null) {
-            Node<T> node = this.head;
-            while(node != null) {
-                if(node.value == data) {
-                    result = node;
-                    break;
-                } else {
-                    node = node.next;
-                }
+        Node<T> node = this.head;
+        while(node != null) {
+            if(node.value == data) {
+                result = node;
+                break;
+            } else {
+                node = node.next;
             }
         }
 
         return result;
     }
 
-    // 찾은 노드 다음에 삽입
+    // 찾은 노드 다음에 삽입 -- 1 '2' 3   (2, 1) 인 경우
     public void addNodeInside(T newData, T searchData){
         Node<T> searchNode = search(searchData);
-        if(searchNode == null) {
-            addNode(newData);
-        } else {
-            Node<T> searchNextNode = searchNode.next;
+
+        if(searchNode != null) {
+            Node<T> nextNode = searchNode.next;
             searchNode.next = new Node<>(newData);
-            searchNode.next.next = searchNextNode;
+            searchNode.next.next = nextNode;
+        } else {
+            addNode(newData);
         }
     }
 
     public boolean delNode(T targetData){ // * 여기 틀림
-
-        if(this.head == null) {
-            return false;
-        } else {
+        if(this.head != null) {
             Node<T> node = this.head;
             if(node.value == targetData) {
                 this.head = node.next;
@@ -86,9 +82,9 @@ public class MySingleLinkedList<T> {
                     if(node.next.value == targetData) {
                         node.next = node.next.next;
                         return true;
+                    } else {
+                        node = node.next;
                     }
-
-                    node = node.next;
                 }
             }
         }
