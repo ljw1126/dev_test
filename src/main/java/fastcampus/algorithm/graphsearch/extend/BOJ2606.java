@@ -59,8 +59,19 @@ public class BOJ2606 {
         }
     }
 
+    static void dfs(int x) {
+        visit[x] = true;
+
+        for(int y : adj[x]) {
+            if(visit[y]) continue;
+
+            dfs(y);
+        }
+    }
+
     static void pro() {
-        bfs(1);
+        //bfs(1);
+        dfs(1);
 
         int cnt = 0;
         for(int i = 2; i <= N; i++) if(visit[i]) cnt += 1;

@@ -13,7 +13,7 @@ public class BOJ3184 {
 
     static StringBuilder sb = new StringBuilder();
 
-    static int R, C, SHEEP, WOLF;
+    static int R, C, SHEEP, WOLF, _S, _W;
 
     static int[][] direction = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
@@ -69,11 +69,36 @@ public class BOJ3184 {
         else WOLF += _wolf;
     }
 
+    static void dfs(int x, int y) {
+        visit[x][y] = true;
+        if(MAP[x].charAt(y) == 'v') _W += 1;
+        if(MAP[x].charAt(y) == 'o') _S += 1;
+
+        for(int i = 0; i < 4; i++) {
+            int nx = x + direction[i][0];
+            int ny = y + direction[i][1];
+
+            if(nx < 0 || ny < 0 || nx >= R || ny >= C) continue;
+            if(visit[nx][ny]) continue;
+            if(MAP[nx].charAt(ny) == '#') continue;
+
+            dfs(nx, ny);
+        }
+    }
+
     static void pro() {
         for(int i = 0; i < R; i++) {
             for(int j = 0; j < C; j++) {
                 if(!visit[i][j] && MAP[i].charAt(j) != '#') {
-                    bfs(i, j);
+                    //bfs(i, j);
+
+                    //전역변수로 해야 함
+                    _W = 0;
+                    _S = 0;
+                    dfs(i, j);
+
+                    if(_S > _W) SHEEP += _S;
+                    else WOLF += _W;
                 }
             }
         }

@@ -60,16 +60,6 @@ public class BOJ11725 {
 
     }
 
-    static boolean[] visit;
-    static void dfs(int start, int _parent) {
-        visit[start] = true;
-        parent[start] = _parent;
-
-        for(int x : adj[start]) {
-            if(visit[x]) continue;
-            dfs(x, start);
-        }
-    }
     static void pro() {
         bfs(1);
 
@@ -85,4 +75,26 @@ public class BOJ11725 {
         input();
         pro();
     }
+
+    /*
+        // DFS 풀이 가능
+        static int[] parent;
+        static void dfs(int node, int _parent) {
+            parent[node] = _parent;
+
+            for(int x : adj[node]) {
+                if(parent[x] == 0) {
+                    dfs(x, node);
+                }
+            }
+        }
+
+        static void pro() {
+            dfs(1, 0);
+
+            for(int i = 2; i <= N; i++) sb.append(parent[i]).append("\n");
+
+            System.out.println(sb);
+        }
+     */
 }

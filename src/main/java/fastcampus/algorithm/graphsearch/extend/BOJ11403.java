@@ -81,4 +81,37 @@ public class BOJ11403 {
         input();
         pro();
     }
+
+    /*
+    // DFS 풀이 할 경우
+    static int[] distance;
+    static void dfs(int x, int value) {
+        distance[x] = value;
+
+        for(int y : adj[x]) {
+            if(distance[y] == 0) {
+                dfs(y, value + 1);
+            }
+        }
+    }
+
+    static void pro() {
+        for(int i = 1; i <= N; i++) {
+            for(int j = 0; j <= N; j++) {
+                distance[j] = 0;
+            }
+
+            dfs(i, 0);
+
+            for(int k = 1; k <= N; k++) {
+                if(distance[k] > 0) sb.append(1).append(" ");
+                else sb.append(0).append(" ");
+            }
+
+            sb.append("\n");
+        }
+
+        System.out.println(sb);
+    }
+     */
 }
