@@ -46,15 +46,17 @@ public class BOJ20364 {
     static void dfs(int target) {
         int result = 0;
         int idx = target;
+
         while(idx != 0) {
-            if(REAL_ESTATE[idx]) {
+            if(REAL_ESTATE[idx]) { // 제일 처음 만나는 점유땅을 찾으려면 break 하면 안됨
                 result = idx;
             }
 
             idx /= 2;
         }
 
-        REAL_ESTATE[target] = true;
+        if(result == 0) REAL_ESTATE[target] = true;
+
         sb.append(result).append("\n");
     }
     static void pro() {

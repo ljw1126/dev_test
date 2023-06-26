@@ -6,52 +6,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ *
+ * DFS, 인접리스트로 풀이시 O(V + E) 만큼의 시간 소요
+ * O(V + E) = O(500,000 + 499,999)
+ */
 public class BOJ15900 {
 
-    static StringBuilder sb = new StringBuilder();
-
-    static int N, LEAF;
-
-    static List<Integer>[] adj;
-
-    static boolean[] VISIT;
+    static int N, ANS;
+    static List<Integer>[] tree;
 
     static void input() throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
         N = Integer.parseInt(st.nextToken());
-        adj = new ArrayList[N + 1];
-        for(int i = 1; i <= N; i++) adj[i] = new ArrayList<>();
 
-        for(int i = 1; i <= N - 1; i++) {
+        tree = new ArrayList[N + 1];
+        for(int i = 1; i <= N; i++) tree[i] = new ArrayList();
+
+        for(int i = 1; i <= (N - 1); i++) {
             st = new StringTokenizer(br.readLine());
-
             int from = Integer.parseInt(st.nextToken());
             int to = Integer.parseInt(st.nextToken());
 
-            adj[from].add(to);
-            adj[to].add(from);
+            tree[from].add(to);
+            tree[to].add(from);
         }
 
-        VISIT = new boolean[N + 1];
+        br.close();
     }
 
-    static void dfs(int x, int depth) {
-        VISIT[x] = true;
-        for(int y : adj[x]) {
-            if(VISIT[y]) continue;
-            dfs(y,depth + 1);
+    static void dfs(int node, int parent, int depth) {
+        if(node != 1 && tree[node].size() == 1 && tree[node].get(0) == parent) {
+            ANS += depth;
+            return;
         }
 
-        // 단말 노드 : 사이즈가 1이고, 부모 노드에 대한 정보만 있을 때
-        if(x != 1 && adj[x].size() == 1) {
-            LEAF += depth;
+        for(int child : tree[node]) {
+            if(child == parent) continue;
+
+            dfs(child, node,depth + 1);
         }
     }
+
     static void pro() {
-        dfs(1,  0);
-        System.out.println(LEAF % 2 == 1 ? "YES" : "NO");
+        dfs(1, -1,  0);
+
+        System.out.println(ANS % 2 == 1 ? "Yes" : "No");
     }
 
     public static void main(String[] args) throws Exception {
