@@ -70,11 +70,39 @@ public class BOJ1509 {
         System.out.println(DP[TEXT_LENGTH]);
     }
 
+
+    static void executeByTopDown() {
+        DP = new int[TEXT_LENGTH + 1];
+
+        Arrays.fill(DP, Integer.MAX_VALUE);
+        DP[0] = 0;
+
+        System.out.println(rec(TEXT_LENGTH));
+    }
+
+    static int rec(int j) { // top-down 방식
+        if(j < 0) return 0;
+        if(DP[j] != Integer.MAX_VALUE) return DP[j];
+
+        int value = Integer.MAX_VALUE;
+        for(int i = 1; i <= j; i++) {
+            if(PALINDROME[i][j]) {
+                value = Math.min(value, rec(i - 1) + 1);
+            }
+        }
+
+        return DP[j] = value;
+    }
+
     public static void main(String[] args) throws Exception {
         input();
 
         fulfillPalindrome();
 
-        pro();
+        //bottom-up
+        //pro();
+
+        //top-down
+        executeByTopDown();
     }
 }
