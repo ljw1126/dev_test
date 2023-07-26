@@ -14,8 +14,8 @@ enum Planet {
     NEPTUNE (1.024e+26, 2.4746e7),
     PLUTO   (1.27e+22,  1.137e6);
 
-    private final double mass; // in kilograms
-    private final double radius; // in meters
+    private final double mass; // 질량 (단위: 킬로그램)
+    private final double radius; // 반지름 (단위: 미터)
 
     private Planet(double mass, double radius) {
         this.mass = mass;
@@ -25,7 +25,7 @@ enum Planet {
     public double mass() { return mass; }
     public double radius() { return radius; }
 
-    // universal gravitational constant  (m3 kg-1 s-2)
+    // 중력 상수  (m^3 / kg s^2)
     public static final double G = 6.67300E-11;
 
     public double surfaceGravity() {
@@ -33,7 +33,7 @@ enum Planet {
     }
 
     public double surfaceWeight(double otherMass) {
-        return otherMass * surfaceGravity();
+        return otherMass * surfaceGravity(); // F = ma
     }
 }
 
@@ -42,12 +42,12 @@ public class EnumExample2 {
     // 입력받은 지구에서의 무게가 다른 행성에서 얼마나 하는지 확인
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        double earthWeight = Double.parseDouble(br.readLine()); // ex. 175
-        double mass = earthWeight/Planet.EARTH.surfaceGravity(); // 지구에서
+        double earthWeight = Double.parseDouble(br.readLine());
+        double mass = earthWeight/Planet.EARTH.surfaceGravity();
 
         StringBuilder sb = new StringBuilder();
         for(Planet p : Planet.values()) {
-            sb.append(String.format("Your weight on %s is %f%n", p, p.surfaceWeight(mass)));
+            sb.append(String.format("%s 에서의 무게는 %f%n", p, p.surfaceWeight(mass)));
         }
 
         System.out.println(sb);

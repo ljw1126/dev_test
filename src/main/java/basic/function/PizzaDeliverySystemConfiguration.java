@@ -12,13 +12,9 @@ public enum PizzaDeliverySystemConfiguration {
         return INSTANCE;
     }
 
-    private PizzaDeliveryStrategy deliveryStrategy;
+    private PizzaDeliveryStrategy deliveryStrategy = PizzaDeliveryStrategy.NORMAL;
 
     public PizzaDeliveryStrategy getDeliveryStrategy() {
         return deliveryStrategy;
-    }
-
-    public void setDeliveryStrategy(PizzaDeliveryStrategy deliveryStrategy) {
-        this.deliveryStrategy = deliveryStrategy;
     }
 }

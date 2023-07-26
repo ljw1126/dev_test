@@ -3,8 +3,10 @@ package basic.function;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,7 +64,7 @@ class PizzaTest {
     @Test
     void deliver_method_test() {
         // given
-        Pizza pizza = new Pizza(PizzaStatus.READY, PizzaDeliveryStrategy.EXPRESS);
+        Pizza pizza = new Pizza(PizzaStatus.READY);
 
         // when
         pizza.deliver();

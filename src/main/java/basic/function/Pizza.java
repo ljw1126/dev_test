@@ -12,16 +12,8 @@ import java.util.stream.Collectors;
 public class Pizza {
     private PizzaStatus pizzaStatus;
 
-    private PizzaDeliveryStrategy pizzaDeliveryStrategy;
-
     public Pizza(PizzaStatus pizzaStatus) {
         this.pizzaStatus = pizzaStatus;
-        this.pizzaDeliveryStrategy = PizzaDeliveryStrategy.NORMAL;
-    }
-
-    public Pizza(PizzaStatus pizzaStatus, PizzaDeliveryStrategy pizzaDeliveryStrategy) {
-        this.pizzaStatus = pizzaStatus;
-        this.pizzaDeliveryStrategy = pizzaDeliveryStrategy;
     }
 
     private void setPizzaStatus(PizzaStatus pizzaStatus) {
@@ -32,13 +24,6 @@ public class Pizza {
         return pizzaStatus;
     }
 
-    public PizzaDeliveryStrategy getPizzaDeliveryStrategy() {
-        return pizzaDeliveryStrategy;
-    }
-
-    public void setPizzaDeliveryStrategy(PizzaDeliveryStrategy pizzaDeliveryStrategy) {
-        this.pizzaDeliveryStrategy = pizzaDeliveryStrategy;
-    }
 
     public boolean isDeliverable() {
         return this.pizzaStatus.isReady();
@@ -59,12 +44,7 @@ public class Pizza {
 
     public void deliver() {
         if(isDeliverable()) {
-            // 인스턴스를 싱글턴으로 가져오는데 .. 전략이 default 가 NORMAL 인데 EXPRESS는 안되는가??
-            //PizzaDeliverySystemConfiguration.getInstance().getDeliveryStrategy().deliver(this);
-
-            PizzaDeliverySystemConfiguration configuration = PizzaDeliverySystemConfiguration.getInstance();
-            configuration.setDeliveryStrategy(this.getPizzaDeliveryStrategy());
-            configuration.getDeliveryStrategy().deliver(this);
+            PizzaDeliverySystemConfiguration.getInstance().getDeliveryStrategy().deliver(this);
 
             this.setPizzaStatus(PizzaStatus.DELIVERED);
         }
