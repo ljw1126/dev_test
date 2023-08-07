@@ -192,18 +192,19 @@ public class StreamIntermediateOperationTest {
     @Test
     void sorted() {
        List<Integer> numbers = List.of(9, 4, 2, 1, 6);
-       List<Integer> asc = numbers.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList()); // 기본이 뭐지 .. ?
-       List<Integer> desc = numbers.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());;
+       List<Integer> asc = numbers.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+       List<Integer> desc = numbers.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
 
        assertThat(asc).containsExactly(1, 2, 4, 6, 9);
        assertThat(desc).containsExactly(9, 6, 4, 2, 1);
 
        List<String> alphabet = List.of("A", "s", "w", "F", "e");
-       alphabet.stream().sorted(String::compareTo).forEach(System.out::println);
+       alphabet.stream().sorted(String::compareTo).forEach(System.out::println); // A F e s w
+       numbers.stream().sorted(Integer::compareTo).forEach(System.out::println); // 1 2 4 6 9
 
        // 대소문자 구분 안함
-       alphabet.stream().sorted(String.CASE_INSENSITIVE_ORDER).forEach(System.out::println);
-       alphabet.stream().sorted(String.CASE_INSENSITIVE_ORDER.reversed()).forEach(System.out::println);
+       alphabet.stream().sorted(String.CASE_INSENSITIVE_ORDER).forEach(System.out::println); // A e F s w
+       alphabet.stream().sorted(String.CASE_INSENSITIVE_ORDER.reversed()).forEach(System.out::println); // w s F e A
 
        // String 길이로 정렬, T : String, U : int
        List<String> strings = List.of("one", "two", "three", "five", "six", "seven");
@@ -211,6 +212,24 @@ public class StreamIntermediateOperationTest {
        strings.stream().sorted(Comparator.comparingInt(String::length)).forEach(System.out::println);
 
        strings.stream().sorted(Comparator.comparing(String::length).reversed()).forEach(System.out::println);
+    }
+
+    @DisplayName("숫자 배열을 조합하여 가장 큰 문자열 숫자 반환")
+    @Test
+    void sorted2() {
+       int[] input1 = new int[] {6, 10, 2};
+       String answer1 = IntStream.of(input1) // IntStream
+                                .mapToObj(String::valueOf) // Stream<String>
+                                .sorted((a, b) -> (b + a).compareTo(a + b))
+                                .collect(Collectors.joining());
+       assertThat(answer1).isEqualTo("6210");
+
+       int[] input2 = new int[] {3, 30, 34, 5, 9}; // 9534330
+       String answer2 = IntStream.of(input2)
+                                 .mapToObj(String::valueOf)
+                                 .sorted((a, b) -> (b + a).compareTo(a + b))
+                                 .collect(Collectors.joining());
+       assertThat(answer2).isEqualTo("9534330");
     }
 
     @DisplayName("")
@@ -325,4 +344,5 @@ public class StreamIntermediateOperationTest {
         assertThat(result).hasSize(3);
         assertThat(result).containsExactly(11L, 22L, 33L);
     }
+
 }
