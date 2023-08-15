@@ -18,8 +18,8 @@ public class QuickSort {
 
     private static void quickSort(int[] arr) {
         //quickSortByLeftPivot(arr, 0, arr.length - 1);
-        quickSortByMidPivot(arr, 0, arr.length - 1);
-        //quickSortByRightPivot(arr, 0, arr.length - 1);
+        //quickSortByMidPivot(arr, 0, arr.length - 1);
+        quickSortByRightPivot(arr, 0, arr.length - 1);
     }
 
     private static void swap(int[] arr, int left, int right) {
@@ -67,8 +67,8 @@ public class QuickSort {
             swap(arr, L, R);
         }
 
-        quickSortByRightPivot(arr, leftIdx, R - 1);
-        quickSortByRightPivot(arr, R + 1, rightIdx);
+        quickSortByRightPivot(arr, leftIdx, L - 1);
+        quickSortByRightPivot(arr, L + 1, rightIdx);
     }
 
     // 중간 피벗의 경우 L, R이 엇갈릴 때까지 수행
