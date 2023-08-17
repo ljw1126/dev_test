@@ -55,13 +55,13 @@ public class StringTest {
     @Test
     void equalsTest() {
         // given
-        String text = "test";
+        String text = "testorg";
 
         // when
         String compare = "text";
 
         // then
-        assertThat(text).isEqualTo("test");
+        assertThat(text).isEqualTo("testorg");
         assertThat(text.equals(compare)).isFalse();
     }
 
@@ -81,7 +81,7 @@ public class StringTest {
     @Test
     void toCharArrayTest() {
         // given
-        String text = "test";
+        String text = "testorg";
 
         // when
         char[] result = text.toCharArray();
@@ -98,7 +98,7 @@ public class StringTest {
         String text = "TEST";
 
         // when
-        String result = "test";
+        String result = "testorg";
 
         // then
         assertThat(text.toLowerCase()).isEqualTo(result);
@@ -108,7 +108,7 @@ public class StringTest {
     @Test
     void toUpperCaseTest() {
         // given
-        String text = "test";
+        String text = "testorg";
 
         // when
         String result = "TEST";
@@ -186,7 +186,7 @@ public class StringTest {
     @Test
     void endWithTest() {
         // given
-        String text = "test";
+        String text = "testorg";
 
         // when
         // then

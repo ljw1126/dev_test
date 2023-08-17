@@ -1,8 +1,10 @@
-package org.mockito;
+package orgs.mockito;
 
 import dev.test.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
