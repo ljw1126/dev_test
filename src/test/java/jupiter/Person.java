@@ -1,4 +1,4 @@
-package orgs.junit.jupiter.api;
+package jupiter;
 
 public class Person {
     private String firstName;

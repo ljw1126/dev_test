@@ -311,7 +311,7 @@ public class StreamIntermediateOperationTest {
     @DisplayName("test.txt 라인 단위로 읽은 후 단어를 공백 기준으로 자르면 16개 단어가 나온다")
     @Test
     void flatMapExample2() throws Exception {
-        String filePath = "/Users/leejinwoo1126/Home/gitRepository/dev_test/src/test/java/util/stream/test.txt";
+        String filePath = "/home/gitRepository/dev_test/src/test/java/util/stream/test.txt";
         Path path = Paths.get(filePath);
 
         Stream<String> lines = Files.lines(path, StandardCharsets.UTF_8);

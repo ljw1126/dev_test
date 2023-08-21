@@ -1,4 +1,4 @@
-package orgs.junit.jupiter.api;
+package jupiter;
 
 import java.util.Map;
 import java.util.Optional;
@@ -8,22 +8,22 @@ import java.util.stream.Stream;
 
 public enum Calculator {
     PLUS("+") {
-        double apply(int x, int y) {
+        public double apply(int x, int y) {
             return x + y;
         }
     },
     MINUS("-") {
-        double apply(int x, int y) {
+        public double apply(int x, int y) {
             return x - y;
         }
     },
     MULTIPLY("*") {
-        double apply(int x, int y) {
+        public double apply(int x, int y) {
             return x * y;
         }
     },
     DIVIDE("/") {
-        double apply(int x, int y) {
+        public double apply(int x, int y) {
             return x / y;
         }
     };
@@ -39,7 +39,7 @@ public enum Calculator {
         return symbol;
     }
 
-    abstract double apply(int x, int y);
+    public abstract double apply(int x, int y);
 
     private static final Map<String, Calculator> stringToEnum = Stream.of(values()).collect(Collectors.toMap(Calculator::toString, Function.identity()));
 

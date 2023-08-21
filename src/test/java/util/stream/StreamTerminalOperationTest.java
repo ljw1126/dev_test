@@ -101,7 +101,6 @@ public class StreamTerminalOperationTest {
                                         .filter(n -> n < 4).findAny();
 
         assertThat(result.get()).isIn(1, 2, 3);
-        assertThat(result.get()).isEqualTo(2);
     }
 
     @DisplayName("직렬 스트림에서 findFirst 는 첫번째 요소를 반환한다")

@@ -1,4 +1,4 @@
-package orgs.junit.jupiter.api;
+package jupiter;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -88,9 +88,7 @@ public class AssertionsTest {
     @Test
     void timeoutNotExceededWithResult() {
         // The following assertion succeeds, and returns the supplied object.
-        String actualResult = assertTimeout(ofMillis(10), () -> {
-            return "a result";
-        });
+        String actualResult = assertTimeout(ofMillis(10), () -> "a result");
         assertEquals("a result", actualResult);
     }
 

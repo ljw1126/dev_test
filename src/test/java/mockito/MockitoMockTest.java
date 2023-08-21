@@ -1,4 +1,4 @@
-package orgs.mockito;
+package mockito;
 
 import dev.test.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;

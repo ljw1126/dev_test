@@ -1,4 +1,4 @@
-package orgs.junit.jupiter.api;
+package jupiter;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
