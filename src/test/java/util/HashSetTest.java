@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // HashSet의 경우 내부적으로 Map을 사용하고 있고, Map의 key가 중복을 허용하지 않는 점을 이용해서 Key에 저장하네
-public class SetTest {
+public class HashSetTest {
 
     private Set<Integer> setA;
     private Set<Integer> setB;

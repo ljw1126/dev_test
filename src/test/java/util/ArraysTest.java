@@ -80,6 +80,9 @@ public class ArraysTest {
         // when
         int[] copyOfNum1 = Arrays.copyOf(nums, 3); // [1, 2, 3]
         int[] copyOfNum2 = Arrays.copyOf(nums, nums.length); // [1, 2, 3, 4, 5]
+        int[] copyOfNum3 = Arrays.copyOf(nums, 10);
+
+        System.out.println(Arrays.toString(copyOfNum3)); // [1, 2, 3, 4, 5, 0, 0, 0, 0, 0]
 
         // then
         assertThat(copyOfNum1).hasSize(3);
@@ -217,5 +220,20 @@ public class ArraysTest {
         // then
         assertThat(list).hasSize(4); // true
         assertThatThrownBy(() -> list.remove(0)).isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @DisplayName("")
+    @Test
+    void SystemArrayCopy() {
+        //given
+        int[] source = new int[] {6, 7, 8, 9, 10};
+        int[] dest = new int[] {1, 2, 3, 4, 5, 0, 0 ,0 ,0 ,0};
+
+        //when
+        // source, source 복사 시작 위치, 복사 target 배열, 복사 시작 위치, source에 복사할 요소 개수
+        System.arraycopy(source, 0, dest, 5, 5);
+
+        //then
+        assertThat(dest).containsExactly(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 }

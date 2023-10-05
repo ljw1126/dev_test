@@ -7,6 +7,9 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
+ * 공정 컨설턴트 호석(골드3)
+ * https://www.acmicpc.net/problem/22254
+ *
  * - 직접 풀이
  * - 1 ~ N까지 이진 탐색을 해서, 최소 라인 수를 구한다.
  * - 우선순위큐를 사용해서 limit를 안 넘는 경우 mid를 갱신하고 최소값이기때문에 R을 줄인다

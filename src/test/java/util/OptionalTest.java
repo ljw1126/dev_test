@@ -37,7 +37,7 @@ public class OptionalTest {
     @Test
     void of() {
         // given
-        String given = "testorg";
+        String given = "orgs";
         Optional<String> boxed = Optional.of(given);
 
         // when
@@ -61,7 +61,7 @@ public class OptionalTest {
     @DisplayName("Optional 객체에 value 값이 null 인지 아닌지 boolean 형 결과값을 리턴한다")
     @Test
     void isPresent() {
-        Optional<String> boxed = Optional.of("testorg");
+        Optional<String> boxed = Optional.of("orgs");
         Optional<String> empty = Optional.empty();
 
         assertThat(boxed.isPresent()).isTrue();
@@ -72,12 +72,12 @@ public class OptionalTest {
     @Test
     void get() {
         // given
-        Optional<String> boxed = Optional.of("testorg");
+        Optional<String> boxed = Optional.of("orgs");
         Optional<String> empty = Optional.empty();
 
         // when
         // then
-        assertThat(boxed.get()).isEqualTo("testorg");
+        assertThat(boxed.get()).isEqualTo("orgs");
         assertThatThrownBy(empty::get).isInstanceOf(NoSuchElementException.class);
     }
 
@@ -102,12 +102,12 @@ public class OptionalTest {
     void orElseGet() {
         // given
         String defaultText = "default";
-        Optional<String> text = Optional.of("testorg");
+        Optional<String> text = Optional.of("orgs");
         Optional<String> empty = Optional.empty();
 
         // when
         // then
-        assertThat(text.orElseGet(String::new)).isEqualTo("testorg");
+        assertThat(text.orElseGet(String::new)).isEqualTo("orgs");
         assertThat(empty.orElseGet(() -> defaultText)).isEqualTo(defaultText);
     }
 
@@ -115,12 +115,12 @@ public class OptionalTest {
     @Test
     void orElseThrow() {
         // given
-        Optional<String> given = Optional.of("testorg");
+        Optional<String> given = Optional.of("orgs");
         Optional<String> empty = Optional.empty();
 
         // when
         // then
-        assertThat(given.orElseThrow(IllegalArgumentException::new)).isEqualTo("testorg");
+        assertThat(given.orElseThrow(IllegalArgumentException::new)).isEqualTo("orgs");
         assertThatThrownBy(() -> empty.orElseThrow(() -> new RuntimeException("no data")))
                 .isInstanceOf(RuntimeException.class).hasMessage("no data");
     }

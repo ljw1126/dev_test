@@ -25,7 +25,7 @@ dependencies {
 
     runtimeOnly 'mysql:mysql-connector-java'
 
-    implementation 'org.springframework.session:spring-session-jdbc:2.6.1'
+    //implementation 'org.springframework.session:spring-session-jdbc:2.6.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
     implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
