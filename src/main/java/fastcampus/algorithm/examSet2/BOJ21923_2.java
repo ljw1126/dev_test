@@ -2,48 +2,33 @@ package fastcampus.algorithm.examSet2;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
 /**
- * 곡예 비행 (골드4)
+ * 곡예 비행 재풀이
  * https://www.acmicpc.net/problem/21923
- *
- * - 직접 풀이 못함(BFS로 풀이시 상승에서 하강 변경 처리 못함)
- * - 상승일때 위, 오른쪽 / 하강 일때 아래, 오른쪽
- * - 최대치는 long이라는데 이해 못함
  */
-public class BOJ21923 {
+public class BOJ21923_2 {
     static StringBuilder sb = new StringBuilder();
-
-    static int N, M;
-
-    static int[][] fields;
 
     static void input() throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
 
-        fields = new int[N + 1][M + 1];
+        int[][] fields = new int[N + 1][M + 1];
         for(int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
             for(int j = 1; j <= M; j++) {
                 fields[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-    }
 
-    static void pro() throws IOException {
-
-        // 1. up : 상승
         long[][] up = new long[N + 1][M + 1];
-
-        // 초기화
         up[N][1] = fields[N][1];
         for(int row = N - 1; row >= 1; row--) {
             up[row][1] = fields[row][1] + up[row + 1][1];
@@ -53,17 +38,14 @@ public class BOJ21923 {
             up[N][col] = fields[N][col] + up[N][col - 1];
         }
 
-        // 동적 프로그래밍 1
         for(int row = N - 1; row >= 1; row--) {
             for(int col = 2; col <= M; col++) {
                 up[row][col] = fields[row][col] + Math.max(up[row][col - 1], up[row + 1][col]);
             }
         }
 
-        // 2. down : 하강
-        long[][] down = new long[N + 1][M + 1];
 
-        // 초기화
+        long[][] down = new long[N + 1][M + 1];
         down[N][M] = fields[N][M];
         for(int row = N - 1; row >= 1; row--) {
             down[row][M] = fields[row][M] + down[row + 1][M];
@@ -73,14 +55,13 @@ public class BOJ21923 {
             down[N][col] = fields[N][col] + down[N][col + 1];
         }
 
-        // 동적 프로그래밍 2
         for(int row = N - 1; row >= 1; row--) {
             for(int col = M - 1; col >= 1; col--) {
                 down[row][col] = fields[row][col] + Math.max(down[row][col + 1], down[row + 1][col]);
             }
         }
 
-        // 3. 정답 처리
+
         long result = Long.MIN_VALUE;
         for(int i = 1; i <= N; i++) {
             for(int j = 1; j <= M; j++) {
@@ -89,9 +70,13 @@ public class BOJ21923 {
         }
 
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        bw.write(Long.toString(result));
-        bw.flush();
+        bw.write(result + "");
         bw.close();
+        bw.close();
+    }
+
+    static void pro() {
+
     }
 
     public static void main(String[] args) throws Exception {
