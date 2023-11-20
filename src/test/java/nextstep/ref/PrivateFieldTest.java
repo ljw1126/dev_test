@@ -67,4 +67,57 @@ public class PrivateFieldTest {
         assertThat(person).extracting("age", "uidNumber", "pinCode", "contactNumber", "height", "weight", "gender", "active", "name")
                 .containsExactly(ageValue, uidNumberValue, pinCodeValue, contactNumberValue, heightValue, weightValue, genderValue, activeValue, nameValue);
     }
+
+    @DisplayName("")
+    @Test
+    void getPrivateField() throws NoSuchFieldException, IllegalAccessException {
+        nextstep.ref.ex5.Person person = new nextstep.ref.ex5.Person();
+        Class<? extends nextstep.ref.ex5.Person> clazz = person.getClass();
+
+        byte ageResult = 26;
+        short uidNumberResult = 5555;
+        int pinCodeResult = 411057;
+        long contactNumberResult = 123456789L;
+        float heightResult = 6.12342f;
+        double weightResult = 75.254;
+        char genderResult = 'M';
+        boolean activeResult = true;
+        String nameResult = "HongGilDong";
+
+        Field age = clazz.getDeclaredField("age");
+        age.setAccessible(true);
+        assertThat(age.getByte(person)).isEqualTo(ageResult);
+
+        Field uidNumber = clazz.getDeclaredField("uidNumber");
+        uidNumber.setAccessible(true);
+        assertThat(uidNumber.getShort(person)).isEqualTo(uidNumberResult);
+
+        Field pinCode = clazz.getDeclaredField("pinCode");
+        pinCode.setAccessible(true);
+        assertThat(pinCode.getInt(person)).isEqualTo(pinCodeResult);
+
+        Field contactNumber = clazz.getDeclaredField("contactNumber");
+        contactNumber.setAccessible(true);
+        assertThat(contactNumber.getLong(person)).isEqualTo(contactNumberResult);
+
+        Field height = clazz.getDeclaredField("height");
+        height.setAccessible(true);
+        assertThat(height.getFloat(person)).isEqualTo(heightResult);
+
+        Field weight = clazz.getDeclaredField("weight");
+        weight.setAccessible(true);
+        assertThat(weight.getDouble(person)).isEqualTo(weightResult);
+
+        Field gender = clazz.getDeclaredField("gender");
+        gender.setAccessible(true);
+        assertThat(gender.getChar(person)).isEqualTo(genderResult);
+
+        Field active = clazz.getDeclaredField("active");
+        active.setAccessible(true);
+        assertThat(active.getBoolean(person)).isEqualTo(activeResult);
+
+        Field name = clazz.getDeclaredField("name");
+        name.setAccessible(true);
+        assertThat(name.get(person)).isEqualTo(nameResult);
+    }
 }
