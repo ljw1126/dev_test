@@ -1,71 +1,79 @@
-package basic.data.structure;
+package basic.data.structure.practice;
 
-import java.util.Queue;
+import java.util.NoSuchElementException;
 
-/*
-    *배열 순환하여 사용하도록 하기 위해 front, rear pointer 사용함
-
-      i 0 1 2 3 4 5 6 7
-  front 7
- maxSize = 10일 때
-   index = (i + front) % maxSize;
- */
 public class MyQueueByArray<T> {
+
     private int maxSize; // 크기
-    private int size; // 현재 길이
-    private T[] queue;
+    private int size; // 현 재길이
+    private T[] element;
     private int front; // 첫 번째 요소 커서, 데이터를 꺼내는 인덱스
-    private int rear; // 마지막 요소 커서, 데이터를 넣는 인덱스
+    private int rear; // 미자막 요소 커서, 데이터를 넣는 인덱스
 
     public static class EmptyQueueException extends RuntimeException {
-        public EmptyQueueException() {}
+        public EmptyQueueException() {
+        }
     }
 
     public static class OverflowQueueException extends RuntimeException {
-        public OverflowQueueException() {}
+        public OverflowQueueException() {
+        }
     }
 
     public MyQueueByArray(int capacity) {
-        maxSize = capacity;
-        size = front = rear = 0;
+        this.maxSize = capacity;
+        this.size = this.front = this.rear = 0;
         try {
-            queue = (T[]) new Object[capacity];
-        } catch (OutOfMemoryError e) {
+            element = (T[]) new Object[capacity];
+        } catch (OutOfMemoryError o) {
             maxSize = 0;
         }
     }
 
-    public void enqueue(T t) { // rear
+    public void enqueue(T t) {
         if(isFull()) throw new OverflowQueueException();
 
-        queue[rear++] = t;
-        size++;
+        this.element[rear++] = t;
+        this.size += 1;
 
-        if(rear == maxSize) rear = 0; // maxSize : 10 이면 마지막 인덱스는 9니깐
+        if(rear == maxSize)
+            rear = 0;
     }
 
-    public T dequeue() { // front
+    public T dequeue() {
         if(isEmpty()) throw new EmptyQueueException();
 
-        T result = queue[front++]; // *여기 틀림
-        size--;
+        T el = this.element[front++];
+        this.size -= 1;
 
-        if(front == maxSize) front = 0; // * 여기 틀림
+        if(front == maxSize)
+            front = 0;
 
-        return result;
+        return el;
     }
 
     public T peek() {
-        if(isEmpty()) throw new EmptyQueueException();
-        return queue[front];
+        if(isEmpty())
+            throw new EmptyQueueException();
+
+        return this.element[front];
+    }
+
+    private boolean isEmpty() {
+        return size == 0;
+    }
+
+    private boolean isFull() {
+        return size >= maxSize;
     }
 
     public int indexOf(T t) {
-        if(isEmpty()) throw new EmptyQueueException();
+        if(isEmpty())
+            throw new EmptyQueueException();
 
-        for(int i = 0; i < size; i++) { // * 여기 틀림
-            int idx = (i + front) % maxSize; // * 여기 틀림
-            if(queue[idx].equals(t)) {
+        for(int i = 0; i < size; i++) {
+            int idx = (i + this.front) % maxSize;
+            if(this.element[idx].equals(t)) {
                 return idx;
             }
         }
@@ -74,30 +82,22 @@ public class MyQueueByArray<T> {
     }
 
     public void clear() {
-        front = rear = size = 0; // 메모리 낭비하기 보다는 처음부터 넣는다는 개념
+        this.front = this.rear = this.size = 0;
     }
 
     public int size() {
-        return size;
-    }
-
-    public boolean isEmpty() {
-        return size <= 0;
-    }
-
-    public boolean isFull() {
-        return size >= maxSize;
+        return this.size;
     }
 
     public void dump() {
-        if(isEmpty()) throw new EmptyQueueException();
+        if(isEmpty()) throw new NoSuchElementException();
 
         for(int i = 0; i < size; i++) {
-            int idx = (i + front) % maxSize;
-            System.out.println(queue[idx]);
+            int idx = (i + this.front) % maxSize;
+            System.out.println(this.element[idx]);
         }
     }
-    
+
     public static void main(String[] args) {
         MyQueueByArray<Integer> MyQueueByArray = new MyQueueByArray(10);
         MyQueueByArray.enqueue(1);

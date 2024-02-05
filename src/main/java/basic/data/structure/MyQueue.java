@@ -1,10 +1,11 @@
 package basic.data.structure;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MyQueue<T>{
-    private final List<T> queue = new ArrayList<>();
+    private final List<T> queue = new LinkedList<>();
 
     public void enqueue(T item) {
         queue.add(item);
