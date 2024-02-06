@@ -133,7 +133,7 @@ public class MyHeap {
         myHeap.insert(5);
         myHeap.insert(4);
         myHeap.insert(20);
-        System.out.println(myHeap.myHeap); // [null,20,10,15,5,4]
+        System.out.println(myHeap.myHeap); // [null,20,10,15,5,4,8]
 
         System.out.println(myHeap.pop());  // 20
         System.out.println(myHeap.myHeap); // [null,15,10,8,5,4]
