@@ -3,11 +3,7 @@ package basic.function;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 class Grocery {} // 식료 품점
 class Noodle extends Grocery {}

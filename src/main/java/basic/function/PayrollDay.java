@@ -1,6 +1,7 @@
 package basic.function;
 
-import static basic.function.PayrollDay.PayType.*;
+import static basic.function.PayrollDay.PayType.WEEKDAY;
+import static basic.function.PayrollDay.PayType.WEEKEND;
 
 public enum PayrollDay {
     MONDAY(WEEKDAY), TUESDAY(WEEKDAY), WEDNESDAY(WEEKDAY), THURSDAY(WEEKDAY), FRIDAY(WEEKDAY),

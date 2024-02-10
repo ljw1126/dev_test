@@ -1,13 +1,6 @@
 package basic.function;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static basic.function.Plant.LifeCycle.ANNUAL;
 import static basic.function.Plant.LifeCycle.PERENNIAL;
