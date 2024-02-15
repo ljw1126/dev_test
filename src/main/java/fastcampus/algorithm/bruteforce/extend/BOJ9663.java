@@ -1,91 +1,110 @@
 package fastcampus.algorithm.bruteforce.extend;
 
-import fastcampus.algorithm.MyReader;
+import java.io.*;
+import java.util.StringTokenizer;
 
 /**
  * N-Queen (골드4)
  * https://www.acmicpc.net/problem/9663
  *
  * n 주어짐 ( 1 <= N < 15)
+ * 시간 복잡도 : O(14^14)
  *
+ * 중복 순열을 모두 구한 다음 유효성 검사시 시간초과 발생
+ * -> 행 마다 유효성 검사를 할 수 있도록 하여 시간내 통과하도록 수정
  */
 public class BOJ9663 {
 
-    static int N, result;
+    static int N, RESULT;
+    static int[] column;
+    static StringBuilder sb;
 
-    static int[] col;
+    public static void input() {
+        sb = new StringBuilder();
 
-    static void input() {
-        MyReader scan = new MyReader();
-        N = scan.nextInt();
-        col = new int[N + 1];
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt();
+
+        column = new int[N + 1];
     }
 
-    static boolean attackAble(int r1, int c1, int r2, int c2) {
-        if(r1 == r2 || c1 == c2) return true;
-        if(Math.abs(r1 - r2) == Math.abs(c1 - c2)) return true;
-        /*
-        if(r1 - c1 == r2 - c2) return true;
+    public static void output() throws IOException {
+        sb.append(RESULT);
+
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
+    public static void main(String[] args) throws IOException {
+        input();
+
+        rec(1);
+
+        output();
+    }
+
+    private static void rec(int row) {
+        if(row == N + 1) {
+            RESULT += 1;
+            return;
+        }
+
+        for(int c = 1; c <= N; c++) {
+            if(isPossible(row, c)) {
+                column[row] = c;
+                rec(row + 1);
+                column[row] = 0;
+            }
+        }
+    }
+
+    private static boolean attackable(int r1, int c1, int r2, int c2) {
+        if(c1 == c2) return true;
         if(r1 + c1 == r2 + c2) return true;
-         */
+        if(r1 - c1 == r2 - c2) return true;
 
         return false;
     }
-    static boolean isValid() {
-        for(int i = 1; i <= N; i++) {
-            // (i, col[i])
-            for(int j = 1; j < i; j++) {
-                // (j, col[j])
-                if(attackAble(i, col[i], j, col[j])) {
-                    return false;
-                }
+
+    private static boolean isPossible(int row, int col) { // 이번에 놓으려는 위치 (row, col)
+        for(int r = 1; r < row; r++) {
+            if(attackable(r, column[r], row, col)) {
+                return false;
             }
         }
 
         return true;
     }
 
-    // 전체 조합을 구한 다음 구하니 시간 초과 발생 가능
-    static void dfs(int row) {
-        if(row == N + 1) {
-            if(isValid()) result += 1;
-            return;
+
+    public static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            br = new BufferedReader(new InputStreamReader(System.in));
         }
 
-        for(int c = 1; c <= N; c++) {
-            col[row] = c;
-            dfs(row + 1);
-            col[row] = 0;
-        }
-    }
-
-    static void recFunc(int row) {
-        if(row == N + 1) {
-            result += 1;
-            return;
-        }
-
-        for(int c = 1; c <= N; c++) {
-            boolean possible = true;
-            for(int i = 1; i <= row - 1; i++) {
-                if(attackAble(i, col[i], row, c)) {
-                    possible = false;
-                    break;
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
 
-            if(!possible) continue; // 처음부터 가능한 경우만 고려
-
-            col[row] = c;
-            recFunc(row + 1);
-            col[row] = 0;
+            return st.nextToken();
         }
-    }
 
-    public static void main(String[] args) {
-        input();
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
 
-        recFunc(1);
-        System.out.println(result);
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }
