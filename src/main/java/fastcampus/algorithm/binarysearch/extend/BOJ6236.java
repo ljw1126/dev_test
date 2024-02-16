@@ -1,7 +1,6 @@
 package fastcampus.algorithm.binarysearch.extend;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.StringTokenizer;
 
 /**
@@ -9,62 +8,131 @@ import java.util.StringTokenizer;
  *
  * L 의 범위가 틀려서 시간 소요
  * https://blog.potados.com/ps/boj-6236-money/
+ *
+ * 최대치
+ * 10만일 동안 1번 인출 가능하고, 매일 만원씩 필요한 경우 10^9 필요 (int 범위내)
+ * 반례 1
+ * 2 2
+ * 500
+ * 501
+ *
+ * 답 501
+ *
+ * 반례 2
+ * 5 5
+ * 1
+ * 1
+ * 1
+ * 1
+ * 100
+ *
+ * 답 100
  */
 public class BOJ6236 {
 
-    static int N, M, MIN;
-    static int[] A;
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+    static StringBuilder sb = new StringBuilder();
+    static int N, M, MIN, MAX;
+    static int[] SCHEDULE;
 
-        st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken()); // 일정 N일 동안 사용할 금액 정함
-        M = Integer.parseInt(st.nextToken()); // M번만 통장에서 돈을 빼서 쓰기로 함
+    private static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt(); // 일수
+        M = inputProcessor.nextInt(); // 최대 인출 횟수
 
-        A = new int[N];
-        for(int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            A[i] = Integer.parseInt(st.nextToken());
-            MIN = Math.max(MIN, A[i]); // 요걸 지정하지 않아서.. K가 아주 작아서 어떤날에 써양하는 금액보다 작으면, 그날에 돈을 쓸 수 없다. 그러므로 K 시작 범위는 주어진 날 별 필요한 돈 중 max값 취함
+        SCHEDULE = new int[N + 1];
+        for(int i = 1; i <= N; i++) {
+            SCHEDULE[i] = inputProcessor.nextInt();
+            MIN = Math.max(MIN, SCHEDULE[i]);
+            MAX += SCHEDULE[i];
         }
     }
 
-    static boolean isValid(int limit) {
-        int wallet = limit;
+    private static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
+    private static void pro() {
+        int L = MIN;
+        int R = MAX;
+        int result = 0;
+        while(L <= R) {
+            int k = (L + R) / 2;
+
+            if(valid(k)) {
+                result = k;
+                R = k - 1;
+            } else {
+                L = k + 1;
+            }
+        }
+
+        sb.append(result);
+    }
+
+    private static boolean valid(int limit) {
         int cnt = 1;
-        for(int a : A) {
-            if(wallet - a < 0) {
+        int wallet = limit;
+
+        for(int i = 1; i <= N; i++) {
+            if(wallet - SCHEDULE[i] < 0) {
+                wallet = limit; // 남은 금액을 통장에 넣고 다시 K원을 인출 한다
                 cnt += 1;
-                wallet = limit;
             }
 
-            wallet -= a;
+            wallet -= SCHEDULE[i];
         }
 
         return cnt <= M;
     }
 
-    static void pro() {
-        // 금액 K 한도를 정했을 떄 N일 동안 M번 K원 만큼 뽑으며 지낼 수 있는가
-        int K = 0;
-        int L = MIN, R = (int)1e9;
-        while(L <= R) {
-            int limit = (L + R) / 2;
+    public static void main(String[] args) throws IOException {
+        input();
 
-            if(isValid(limit)) {
-                R = limit - 1;
-                K = limit;
-            } else {
-                L = limit + 1;
-            }
-        }
+        pro();
 
-        System.out.println(K);
+        output();
     }
 
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
+    public static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }

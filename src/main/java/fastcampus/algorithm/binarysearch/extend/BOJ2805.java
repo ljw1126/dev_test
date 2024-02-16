@@ -1,7 +1,6 @@
 package fastcampus.algorithm.binarysearch.extend;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.StringTokenizer;
 
 /**
@@ -29,50 +28,105 @@ import java.util.StringTokenizer;
  */
 public class BOJ2805 {
 
+    static StringBuilder sb = new StringBuilder();
     static int N, M;
+    static int[] TREE;
 
-    static int[] tree;
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+    private static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt(); // 나무의 수
+        M = inputProcessor.nextInt(); // 필요한 나무의 길이
 
-        st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-
-        tree = new int[N + 1];
-        st = new StringTokenizer(br.readLine());
-        for(int i = 1; i <= N; i++) tree[i] = Integer.parseInt(st.nextToken());
+        TREE = new int[N + 1];
+        for(int i = 1; i <= N; i++) {
+            TREE[i] = inputProcessor.nextInt();
+        }
     }
 
-    static boolean isValidHeight(int H) {
-        long sum = 0L; // int 선언시 overflow 발생 가능
-        for(int t : tree) {
-            if(t > H) sum += (t - H);
+    private static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
+    private static void pro() {
+        int L = 0;
+        int R = 2000000001;
+
+        int result = -1;
+        while(L <= R) {
+            int mid = (L + R) / 2;
+
+            if(validHeight(mid)) {
+                result = mid;
+                L = mid + 1;
+            } else {
+                R = mid - 1;
+            }
+        }
+
+        sb.append(result);
+    }
+
+    private static boolean validHeight(int mid) {
+        long sum = 0L;
+
+        for(int i = 1; i <= N; i++) {
+            if(TREE[i] > mid) {
+                sum += (TREE[i] - mid);
+            }
         }
 
         return sum >= M;
     }
 
-    static void pro() {
-        int result = 0;
-        int L = 0, R = 2000000000;
-        while(L <= R) {
-            int H = (L + R) / 2;
 
-            if(isValidHeight(H)) {
-                L = H + 1;
-                result = Math.max(result, H);
-            } else {
-                R = H - 1;
-            }
-        }
+    public static void main(String[] args) throws IOException {
+        input();
 
-        System.out.println(result);
+        pro();
+
+        output();
     }
 
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
+    public static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }
