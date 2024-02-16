@@ -1,6 +1,5 @@
 package fastcampus.algorithm.binarysearch.extend;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;

@@ -5,19 +5,23 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
- * 숫자 카드2(실버4) https://www.acmicpc.net/problem/10816
+ * 수 찾기 (실버4)
+ * https://www.acmicpc.net/problem/1920
  *
- * N, M이 각각 50만개이기때문에 O(N^2)으로 문제 풀이시 시간초과 발생가능 => 이진탐색으로 풀이
+ * 시간복잡도 N^2으로 풀이시 시간초과 발생가능 -> 이진 탐색으로 풀이
  *
- * HashMap 사용해도 풀이 가능하지 않나 싶음
+ *  모든 정수의 범위는 -231 보다 크거나 같고 231보다 작다.
+ *  = int 범위
  *
- * // 240216 다시 풀이, 이진탐색 부등호 달라짐
+ * - 있냐/없냐를 판별하는데 몇개있는지 구하고 있었음(=요구사항 이해 부족)
+ * - Arrays.sort()시 범위 지정 누락
  */
-public class BOJ10816 {
+public class BOJ1920 {
 
-    static StringBuilder sb = new StringBuilder();
     static int N, M;
-    static int[] A, B;
+    static int[] A, X;
+    static StringBuilder sb = new StringBuilder();
+
     private static void input() {
         InputProcessor inputProcessor = new InputProcessor();
         N = inputProcessor.nextInt();
@@ -27,9 +31,9 @@ public class BOJ10816 {
         }
 
         M = inputProcessor.nextInt();
-        B = new int[M + 1];
+        X = new int[M + 1];
         for(int i = 1; i <= M; i++) {
-            B[i] = inputProcessor.nextInt();
+            X[i] = inputProcessor.nextInt();
         }
     }
 
@@ -40,49 +44,28 @@ public class BOJ10816 {
         bw.close();
     }
 
-    private static int lowerBound(int[] arr, int target, int start, int end) {
+    private static boolean binarySearch(int start, int end, int[] arr, int target) {
         int L = start;
         int R = end;
 
         while(L <= R) {
             int mid = (L + R) / 2;
 
-            if(arr[mid] >= target) {
-                R = mid - 1;
-            } else {
-                L = mid + 1;
-            }
+            if(arr[mid] == target) return true;
+            else if(arr[mid] < target) L = mid + 1;
+            else R = mid - 1;
         }
 
-        return L;
+        return false;
     }
 
-    private static int upperBound(int[] arr, int target, int start, int end) {
-        int L = start;
-        int R = end;
-
-        while(L <= R) {
-            int mid = (L + R) / 2;
-
-            if(arr[mid] <= target) {
-                L = mid + 1;
-            } else {
-                R = mid - 1;
-            }
-        }
-
-        return L;
-    }
 
     private static void pro() {
-        Arrays.sort(A, 1, N + 1);
+        Arrays.sort(A, 1, N + 1); // 범위 지정 누락 실수
 
         for(int i = 1; i <= M; i++) {
-            int lowerBound = lowerBound(A, B[i], 1, N);
-            int upperBound = upperBound(A, B[i], 1, N);
-
-            sb.append(upperBound - lowerBound).append(" ");
-            //sb.append(lowerBound).append(",").append(upperBound).append("\n");
+            if(binarySearch(1, N, A, X[i])) sb.append("1").append("\n");
+            else sb.append("0").append("\n");
         }
     }
 
@@ -117,18 +100,6 @@ public class BOJ10816 {
 
         public long nextLong() {
             return Long.parseLong(next());
-        }
-
-        public String nextLine() {
-            String input = "";
-
-            try {
-                input = br.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            return input;
         }
     }
 }

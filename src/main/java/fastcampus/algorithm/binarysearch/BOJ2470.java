@@ -36,6 +36,7 @@ public class BOJ2470 {
         for(int i = 1; i <= N; i++) A[i] = Integer.parseInt(st.nextToken());
     }
 
+    // 최소가 되는 R을 찾는다, 없는 경우 R + 1
     static int binarySearch(int[] arr, int L, int R, int target) {
         int result = R + 1;
         while(L <= R) {

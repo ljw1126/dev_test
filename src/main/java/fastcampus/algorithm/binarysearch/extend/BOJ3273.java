@@ -5,32 +5,28 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
- * 숫자 카드2(실버4) https://www.acmicpc.net/problem/10816
+ * 두 수의 합(실버3)
  *
- * N, M이 각각 50만개이기때문에 O(N^2)으로 문제 풀이시 시간초과 발생가능 => 이진탐색으로 풀이
- *
- * HashMap 사용해도 풀이 가능하지 않나 싶음
- *
- * // 240216 다시 풀이, 이진탐색 부등호 달라짐
+ * - 직접 풀이
+ * - 중복 없이 쌍을 구해야 한다
+ * - n^2 풀이시 시간초과, 최대치는 200만
+ * - 투포인터 처럼 풀이 함
  */
-public class BOJ10816 {
-
+public class BOJ3273 {
     static StringBuilder sb = new StringBuilder();
-    static int N, M;
-    static int[] A, B;
+    static int N, X;
+    static int[] A;
+
     private static void input() {
         InputProcessor inputProcessor = new InputProcessor();
         N = inputProcessor.nextInt();
+
         A = new int[N + 1];
         for(int i = 1; i <= N; i++) {
             A[i] = inputProcessor.nextInt();
         }
 
-        M = inputProcessor.nextInt();
-        B = new int[M + 1];
-        for(int i = 1; i <= M; i++) {
-            B[i] = inputProcessor.nextInt();
-        }
+        X = inputProcessor.nextInt();
     }
 
     private static void output() throws IOException {
@@ -40,51 +36,34 @@ public class BOJ10816 {
         bw.close();
     }
 
-    private static int lowerBound(int[] arr, int target, int start, int end) {
-        int L = start;
-        int R = end;
-
-        while(L <= R) {
-            int mid = (L + R) / 2;
-
-            if(arr[mid] >= target) {
-                R = mid - 1;
-            } else {
-                L = mid + 1;
-            }
-        }
-
-        return L;
-    }
-
-    private static int upperBound(int[] arr, int target, int start, int end) {
-        int L = start;
-        int R = end;
-
-        while(L <= R) {
-            int mid = (L + R) / 2;
-
-            if(arr[mid] <= target) {
-                L = mid + 1;
-            } else {
-                R = mid - 1;
-            }
-        }
-
-        return L;
-    }
-
     private static void pro() {
-        Arrays.sort(A, 1, N + 1);
+        Arrays.sort(A, 1, N + 1); // 정렬 보장
 
-        for(int i = 1; i <= M; i++) {
-            int lowerBound = lowerBound(A, B[i], 1, N);
-            int upperBound = upperBound(A, B[i], 1, N);
+        int result = binarySearch(A, X, 1, N);
 
-            sb.append(upperBound - lowerBound).append(" ");
-            //sb.append(lowerBound).append(",").append(upperBound).append("\n");
-        }
+        sb.append(result);
     }
+
+    private static int binarySearch(int[] arr, int target, int start, int end) {
+        int L = start;
+        int R = end;
+        int result = 0;
+        while(L < R) {
+            int sum = arr[L] + arr[R];
+
+            if(sum == target) {
+                result += 1;
+                L += 1;
+            } else if(sum > target) {
+                R -= 1;
+            } else {
+                L += 1;
+            }
+        }
+
+        return result;
+    }
+
 
     public static void main(String[] args) throws IOException {
         input();
