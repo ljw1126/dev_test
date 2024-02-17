@@ -10,6 +10,8 @@ import java.util.StringTokenizer;
  *
  * 투 포인터 연산 O(N) 소모
  * 총 시간 복잡도 : O(N)
+ *
+ * 최대치 int 범위 내
  */
 public class BOJ1806 {
     static StringBuilder sb = new StringBuilder();
