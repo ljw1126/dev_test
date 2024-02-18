@@ -22,54 +22,12 @@ import java.util.StringTokenizer;
  */
 public class BOJ13702 {
 
+    // 주전자 개수 (N, 최대 1만), 친구 수 (K, 최대 100만)
+    // 주전자 개수 최대 1만이고, 친구가 1만일때(N<=K) 막걸리가 각각 21억 ml씩 들어 있다면, 21만 ml씩 나눠 먹을 수 있다
+    // 막걸리 용량 x ml를 햇을때, K명 친구에게 모두 나눠줄 수 있는가? (이때 최대가 되는 ml를 구해라)
     static StringBuilder sb = new StringBuilder();
     static int N, K;
     static long[] DRINK;
-    private static void input() {
-        InputProcessor inputProcessor = new InputProcessor();
-        N = inputProcessor.nextInt(); // 주전자 개수
-        K = inputProcessor.nextInt(); // 사람 수
-
-        DRINK = new long[N + 1];
-        for(int i = 1; i <= N; i++) {
-            DRINK[i] = inputProcessor.nextLong();
-        }
-    }
-
-    private static void output() throws IOException {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        bw.write(sb.toString());
-        bw.flush();
-        bw.close();
-    }
-
-    private static void pro() {
-        long L = 0;
-        long R = Integer.MAX_VALUE;
-        long result = 0L;
-
-        while(L <= R) {
-            long ml = (L + R) / 2;
-            if(valid(ml)) {
-                result = ml;
-                L = ml + 1;
-            } else {
-                R = ml - 1;
-            }
-        }
-
-        sb.append(result);
-    }
-
-    private static boolean valid(long limit) {
-        int count = 0;
-
-        for(int i = 1; i <= N; i++) {
-            count += (DRINK[i] / limit);
-        }
-
-        return count >= K;
-    }
 
     public static void main(String[] args) throws IOException {
         input();
@@ -78,6 +36,53 @@ public class BOJ13702 {
 
         output();
     }
+
+    public static void pro() {
+        long L = 0L;
+        long R = Integer.MAX_VALUE;
+        long result = 0L;
+        while(L <= R) {
+            long mid = (L + R) / 2;
+
+            if(isPossible(mid)) {
+                result = mid;
+                L = mid + 1;
+            } else {
+                R = mid - 1;
+            }
+        }
+
+        sb.append(result);
+    }
+
+    private static boolean isPossible(long limit) {
+        int count = 0;
+        for(int i = 1; i <= N; i++) {
+            count += (DRINK[i] / limit);
+        }
+
+        return count >= K;
+    }
+
+
+    public static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt();
+        K = inputProcessor.nextInt();
+
+        DRINK = new long[N + 1];
+        for(int i = 1; i <= N; i++) {
+            DRINK[i] = inputProcessor.nextLong();
+        }
+    }
+
+    public static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
 
     public static class InputProcessor {
         BufferedReader br;
@@ -92,9 +97,10 @@ public class BOJ13702 {
                 try {
                     st = new StringTokenizer(br.readLine());
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
             }
+
             return st.nextToken();
         }
 
@@ -104,7 +110,7 @@ public class BOJ13702 {
             try {
                 input = br.readLine();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
 
             return input;

@@ -1,7 +1,6 @@
 package fastcampus.algorithm.binarysearch.extend;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.StringTokenizer;
 
 
@@ -16,60 +15,116 @@ import java.util.StringTokenizer;
  * https://january-diary.tistory.com/entry/BOJ-2343-%EA%B8%B0%ED%83%80-%EB%A0%88%EC%8A%A8-JAVA
  */
 public class BOJ2343 {
-    static int N, M, L, R;
-    static int[] A;
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+    // 강의 길이 총합 10^9
+    // 최소 강의 길이(L) : 최대값
+    // 최대 강의 길이(R) : 모든 강의 길이 합
+    // 블루레이 크기(limit)를 정했을 때, 모든 강의를 블루레이 M개에 담을 수 있는가? (이때 최소값 구함)
+    static StringBuilder sb = new StringBuilder();
+    static int N, M, MIN, TOTAL;
+    static int[] VIDEO;
 
-        st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+    public static void main(String[] args) throws IOException {
+        input();
 
-        A = new int[N];
-        st = new StringTokenizer(br.readLine());
-        for(int i = 0; i < N; i++) {
-            A[i] = Integer.parseInt(st.nextToken());
-            R += A[i];
-            L = Math.max(L, A[i]);
-        }
+        pro();
+
+        output();
     }
 
-    static boolean isValidVideoSize(int[] arr, int size) {
-        int cnt = 0; // 1로 하게 될 경우 마지막 조건문은 삭제 가능(=하나에 전체 강의 담는 경우)
-        int videoLength = 0;
-        for(int a : arr) {
-            if(videoLength + a > size) {
-                cnt += 1;
-                videoLength = 0;
-            }
-
-            videoLength += a;
-        }
-
-        if (videoLength > 0) cnt += 1;
-
-        return cnt <= M;
-    }
-
-    static void pro() {
+    public static void pro() {
+        int L = MIN;
+        int R = TOTAL;
         int result = 0;
         while(L <= R) {
-            int size = (L + R) / 2;
-            if(isValidVideoSize(A, size)) {
-                R = size - 1;
-                result = size;
+            int mid = (L + R) / 2;
+
+            if(isPossible(mid)) {
+                result = mid;
+                R = mid - 1;
             } else {
-                L = size + 1;
+                L = mid + 1;
             }
         }
 
-        System.out.println(result);
+        sb.append(result);
+    }
+
+    private static boolean isPossible(int limit) {
+        int count = 0;
+        int sum = 0;
+        for(int i = 1; i <= N; i++) {
+            if(sum + VIDEO[i] > limit) {
+                count += 1;
+                sum = 0;
+            }
+
+            sum += VIDEO[i];
+        }
+
+        if(sum > 0) count += 1;
+
+        return count <= M; // 블루레이 M개에 다 담을 수 있는가
+    }
+
+    public static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt(); // 강의의 수
+        M = inputProcessor.nextInt(); // 블루레이 개수
+
+        VIDEO = new int[N + 1];
+        for(int i = 1; i <= N; i++) {
+            VIDEO[i] = inputProcessor.nextInt();
+            MIN = Math.max(MIN, VIDEO[i]);
+            TOTAL += VIDEO[i];
+        }
+    }
+
+    public static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
     }
 
 
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
+    public static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }

@@ -1,7 +1,6 @@
 package fastcampus.algorithm.binarysearch.extend;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.StringTokenizer;
 
 /**
@@ -14,41 +13,98 @@ import java.util.StringTokenizer;
  */
 public class BOJ1300 {
 
+    // mid 일 때, 임의 수 S보다 작은 숫자가 mid - 1개를 만족하는가 (이대 최소가 되는 mid값은)
+    static StringBuilder sb = new StringBuilder();
     static int N, K;
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
+    public static void main(String[] args) throws IOException {
+        input();
 
-        st = new StringTokenizer(br.readLine());
-        K = Integer.parseInt(st.nextToken());
+        pro();
+
+        output();
     }
 
-    static void pro() {
-        long result = 0L;
-        long L = 1, R = K;
+    public static void pro() {
+        int L = 1;
+        int R = 1000000000;
+        int result = 0;
         while(L <= R) {
-            long mid = (L + R) / 2;
+            int mid = (L + R) / 2;
 
-            long totalCnt = 0;
-            for(int i = 1; i <= N; i++) {
-                totalCnt += Math.min(mid / i, N);
-            }
-
-            if(totalCnt >= K) {
-                R = mid - 1;
+            if(isValid(mid)) {
                 result = mid;
+                R = mid - 1;
             } else {
                 L = mid + 1;
             }
         }
 
-        System.out.println(result);
+        sb.append(result);
     }
 
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
+    private static boolean isValid(int mid) {
+        int count = 0;
+        for(int i = 1; i <= N; i++) {
+            count += Math.min(N, (mid / i));
+        }
+
+        return count >= K;
+    }
+
+
+    public static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt();
+        K = inputProcessor.nextInt();
+    }
+
+    public static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
+
+    public static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }
