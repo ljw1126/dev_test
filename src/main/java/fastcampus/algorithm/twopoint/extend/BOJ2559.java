@@ -1,7 +1,5 @@
 package fastcampus.algorithm.twopoint.extend;
 
-import fastcampus.algorithm.twopoint.Practice;
-
 import java.io.*;
 import java.util.StringTokenizer;
 

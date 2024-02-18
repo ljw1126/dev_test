@@ -4,19 +4,17 @@ import java.io.*;
 import java.util.StringTokenizer;
 
 /**
- * 수들의 합2(실버4)
- * https://www.acmicpc.net/problem/2003
+ * 고냥이(골드4)
+ * https://www.acmicpc.net/problem/16472
  *
- * 최대치 : 3 * 10^8 (int 범위내)
- * 투포인터 풀이시
- * 시간 복잡도 : O(N)
- * 공간 복잡도 : O(N)
+ * - 시간복잡도 O(N)
+ * - 비즈니스 로직에서 투 포인터 형식에 매몰되어 구하지 못함
  */
-public class BOJ2003 {
+public class BOJ16472 {
     static StringBuilder sb = new StringBuilder();
-
-    static int N, M;
-    static int[] A;
+    static int N, COUNT;
+    static String TEXT;
+    static int[] ALPHABET;
 
     public static void main(String[] args) throws IOException {
         input();
@@ -29,29 +27,37 @@ public class BOJ2003 {
     private static void input() {
         InputProcessor inputProcessor = new InputProcessor();
         N = inputProcessor.nextInt();
-        M = inputProcessor.nextInt();
+        TEXT = inputProcessor.nextLine();
 
-        A = new int[N + 1];
-        for(int i = 1; i <= N; i++) {
-            A[i] = inputProcessor.nextInt();
+        ALPHABET = new int[27];
+    }
+
+    private static void inc(char c) {
+        ALPHABET[c - 'a'] += 1;
+        if(ALPHABET[c - 'a'] == 1) {
+            COUNT += 1;
+        }
+    }
+
+    private static void dec(char c) {
+        ALPHABET[c - 'a'] -= 1;
+        if(ALPHABET[c - 'a'] == 0) {
+            COUNT -= 1;
         }
     }
 
     private static void pro() {
+        int lng = TEXT.length();
         int result = 0;
-        int sum = 0;
-        for(int L = 1, R = 0; L <= N; L++) {
+        for(int R = 0, L = 0; R <= lng - 1; R++) {
+            inc(TEXT.charAt(R));
 
-            while(R + 1 <= N && sum < M) {
-                R += 1;
-                sum += A[R];
+            while(COUNT > N) {
+                dec(TEXT.charAt(L));
+                L += 1;
             }
 
-            if(sum == M) {
-                result += 1;
-            }
-
-            sum -= A[L];
+            result = Math.max(result, R - L + 1);
         }
 
         sb.append(result);

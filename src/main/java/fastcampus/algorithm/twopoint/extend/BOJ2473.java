@@ -1,7 +1,5 @@
 package fastcampus.algorithm.twopoint.extend;
 
-import fastcampus.algorithm.twopoint.Practice;
-
 import java.io.*;
 import java.util.Arrays;
 import java.util.StringTokenizer;
@@ -27,7 +25,7 @@ public class BOJ2473 {
     }
 
     private static void input() {
-        Practice.InputProcessor inputProcessor = new Practice.InputProcessor();
+        InputProcessor inputProcessor = new InputProcessor();
         N = inputProcessor.nextInt();
         A = new int[N + 1];
         for(int i = 1; i <= N; i++) {
