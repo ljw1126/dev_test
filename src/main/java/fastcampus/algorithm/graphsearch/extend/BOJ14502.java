@@ -1,13 +1,12 @@
 package fastcampus.algorithm.graphsearch.extend;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
+import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.StringTokenizer;
 
 /**
@@ -26,153 +25,74 @@ import java.util.StringTokenizer;
  * 3) 바이러스가 전파(방문)하지 않은 빈칸(0) 영역 카운팅하여 최대값을 찾는다
  */
 public class BOJ14502 {
+    /*
+        0 : 빈칸, 1 : 벽, 2 : 바이러스
+        1) 벽을 세운다 - 64C3
+        2) 바이러스를 퍼뜨린다 - N^2
+        3) 안전한 영역을 카운팅 한다(최대값 구함)
+      */
     static StringBuilder sb = new StringBuilder();
-
-    static int N, M, B, RESULT;
-    static int[][] A, BLANK;
-
-    static int[][] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-
+    static int[][] DIR = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    static int[][] MATRIX;
     static boolean[][] VISIT;
+    static int N, M, RESULT, BLANK_COUNT;
+    static int MAX_WALL_COUNT = 3;
 
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+    static int[][] BLANKS;
 
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+    public static void main(String[] args) throws IOException {
+        input();
 
-        A = new int[N][M];
-        for(int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            for(int j = 0; j < M; j++) {
-                A[i][j] = Integer.parseInt(st.nextToken()); // 공백 기준 분리해줌
-            }
-        }
+        pro();
 
-        BLANK = new int[N*M][2];
-        VISIT = new boolean[N][M];
+        output();
     }
 
-    static void bfs() {
-        Queue<Integer> que = new LinkedList<>(); // 테크닉으로 행,열을 push 해서 사용
+    private static void pro() {
+        checkBlank();
+        makeWall(0, 0);
 
-        // 모든 바이러스가 시작점으로 가능하니까, 전부 큐에 삽입
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < M; j++) {
-                VISIT[i][j] = false;
-                if(A[i][j] == 2) {
-                    que.add(i);
-                    que.add(j);
-                    VISIT[i][j] = true;
+        sb.append(RESULT);
+    }
+
+    private static void checkBlank() {
+        BLANKS = new int[65][2];
+
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= M; j++) {
+                if(MATRIX[i][j] == 0) {
+                    BLANKS[BLANK_COUNT][0] = i;
+                    BLANKS[BLANK_COUNT][1] = j;
+                    BLANK_COUNT += 1;
                 }
             }
         }
-
-        while(!que.isEmpty()) {
-            int x = que.poll(), y = que.poll();
-
-            for(int k = 0; k < 4; k++) {
-                int nx = x + DIRECTIONS[k][0], ny = y + DIRECTIONS[k][1];
-
-                if(nx < 0 || ny < 0 || nx >= N || ny >= M) continue;;
-                if(A[nx][ny] != 0) continue;
-                if(VISIT[nx][ny]) continue;
-
-                VISIT[nx][ny] = true; // 바이러스 전염 가능한 경우
-                que.add(nx);
-                que.add(ny);
-            }
-        }
-
-        // 탐색이 종료된 시점이니, 안전 영역의 넓이를 갱신하고 정답 갱신
-        int cnt = 0;
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < M; j++) {
-                if(A[i][j] == 0 && !VISIT[i][j]) cnt += 1;
-            }
-        }
-
-        RESULT = Math.max(RESULT, cnt);
     }
 
-    // idx 번째 빈칸에 벽을 세울지 말지 결정해야 하고, 이전까지 selecetedCnt 만큼 벽을 세웠다는 의미
-    static void dfs(int idx, int selectedCnt) {
-        if(selectedCnt == 3) { // 3개의 벽을 모두 세운 상태
-            bfs();
+    private static void makeWall(int cnt, int idx) {
+        if(cnt == MAX_WALL_COUNT) {
+            spreadVirus();
             return;
         }
 
-        if(idx >= B) return; // 더 이상 세울 수 있는 벽이 없는 상태 (실수 가능 포인트*, > 할 경우 예제 입력1에서 33이 나옴)
+        if(idx >= BLANK_COUNT) return;
 
-        // idx에 세워보는 경우
-        A[BLANK[idx][0]][BLANK[idx][1]] = 1;
-        dfs(idx + 1, selectedCnt + 1);
+        // 벽을 세운다
+        MATRIX[BLANKS[idx][0]][BLANKS[idx][1]] = 1;
+        makeWall(cnt + 1, idx + 1);
 
-        // idx를 세우지 않는 경우
-        A[BLANK[idx][0]][BLANK[idx][1]] = 0;
-        dfs(idx + 1, selectedCnt);
+        // 벽을 세우지 않는다
+        MATRIX[BLANKS[idx][0]][BLANKS[idx][1]] = 0;
+        makeWall(cnt, idx + 1);
     }
 
-    static void pro() {
-        // 모든 벽의 위치를 먼저 모음 (초기 B = 0)
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < M; j++) {
-                if (A[i][j] == 0) {
-                    BLANK[B][0] = i;
-                    BLANK[B][1] = j;
-                    B++;
-                }
-            }
-        }
+    private static void spreadVirus() {
+        Deque<Integer> que = new ArrayDeque<>();
 
-        //벽을 3개 세우는 모든 방법 확인
-        dfs(0, 0);
-        System.out.println(RESULT);
-    }
-
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
-    }
-
-    /* 직접 풀이
-
-    static int N, M, RESULT;
-
-    static int[][] MAP;
-
-    static boolean[][] VISIT;
-
-    static int[][] DIRECTION = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-
-        VISIT = new boolean[N][M];
-        MAP = new int[N][M];
-
-        for(int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            for(int j = 0; j < M; j++) {
-                MAP[i][j] = Integer.parseInt(st.nextToken());
-            }
-        }
-
-        br.close();
-    }
-
-    static void bfs() {
-        Queue<Integer> que = new LinkedList<>();
-
-        // 바이러스 찾음
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < M; j++) {
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= M; j++) {
                 VISIT[i][j] = false;
-                if(MAP[i][j] == 2) {
+                if(MATRIX[i][j] == 2) {
                     que.add(i);
                     que.add(j);
                     VISIT[i][j] = true;
@@ -181,55 +101,94 @@ public class BOJ14502 {
         }
 
         while(!que.isEmpty()) {
-            int x = que.poll(), y = que.poll();
+            int x = que.poll();
+            int y = que.poll();
 
             for(int i = 0; i < 4; i++) {
-                int nx = x + DIRECTION[i][0];
-                int ny = y + DIRECTION[i][1];
+                int nx = x + DIR[i][0];
+                int ny = y + DIR[i][1];
 
-                if(nx < 0 || ny < 0 || nx >= N || ny >= M) continue;
+                if(nx < 1 || ny < 1 || nx > N || ny > M) continue;
                 if(VISIT[nx][ny]) continue;
-                if(MAP[nx][ny] == 0) { // 빈칸인 경우
-                    que.add(nx);
-                    que.add(ny);
-                    VISIT[nx][ny] = true;
+                if(MATRIX[nx][ny] != 0) continue;
+
+                que.add(nx);
+                que.add(ny);
+                VISIT[nx][ny] = true;
+            }
+        }
+
+        int count = 0;
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= M; j++) {
+                if(MATRIX[i][j] == 0 && !VISIT[i][j]) { // 바이러스가 방문하지 않은 경우
+                    count += 1;
                 }
             }
         }
 
-        // 안전 영역 카운팅
-        int cnt = 0;
-        for(int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if(!VISIT[i][j] && MAP[i][j] == 0) cnt += 1;
+        RESULT = Math.max(RESULT, count);
+    }
+
+    private static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt();
+        M = inputProcessor.nextInt();
+
+        MATRIX = new int[N + 1][M + 1];
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= M; j++) {
+                MATRIX[i][j] = inputProcessor.nextInt();
             }
         }
 
-        RESULT = Math.max(RESULT, cnt);
+        VISIT = new boolean[N + 1][M + 1];
     }
 
-    static void dfs(int selectedCount) {
-        if(selectedCount == 3) {
-            bfs();
-            return;
+    private static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
+    public static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
         }
 
-        for(int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if(MAP[i][j] == 0) {
-                    MAP[i][j] = 1;
-                    dfs(selectedCount + 1);
-                    MAP[i][j] = 0;
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
+
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
         }
     }
-
-
-    static void pro() {
-        dfs(0);
-
-        System.out.println(RESULT);
-    }
-    */
 }

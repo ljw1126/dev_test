@@ -1,42 +1,21 @@
 package fastcampus.algorithm.graphsearch.extend;
 
-import fastcampus.algorithm.graphsearch.Practice;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
-/**
- * 물통 (골드5) https://www.acmicpc.net/problem/2251
- *
- * 그래프에 대한 언질이 없음
- *
- * 상태(정점), 물을 부어서 다른 상태로 이동하는 것을 "간선"으로 정의
- *
- * 200 * 200 * 200 = 8 * 10^6 = 800만 가지
- *
- * 정점 개수  8 * 10^6
- * 간선 개수 8 * 10^6 * 6 ( A => B,C 붙는 경우, B => A,C붙는 경우, C => A, C붙는 경우)
- *
- * 시간복잡도 = 8 * 10^6
- */
-public class BOJ2251 {
+public class BOJ2251_ByDfs {
     static StringBuilder sb = new StringBuilder();
 
     static int A, B, C;
     static boolean[][][] VISIT;
 
     static int[] LIMIT;
+    static boolean[] POSSIBLE;
+
     private static class Bottle {
         int[] arr;
 
@@ -76,42 +55,31 @@ public class BOJ2251 {
      * 첫번쨰 물통이 비어 있을 때, 세번째 물통에 담겨있는 물의 양을 구하라
      */
     private static void pro() {
-        bfs();
+        dfs(new Bottle(new int[] {0, 0, C}));
+
+        for(int i = 0; i <= C; i++) {
+            if(POSSIBLE[i]) {
+                sb.append(i).append(" ");
+            }
+        }
     }
 
-    private static void bfs() {
-        Deque<Bottle> que = new ArrayDeque<>();
-        que.add(new Bottle(new int[] {0, 0, C}));
-        VISIT[0][0][C] = true;
+    private static void dfs(Bottle bottle) {
+        VISIT[bottle.arr[0]][bottle.arr[1]][bottle.arr[2]] = true;
+        if(bottle.arr[0] == 0) POSSIBLE[bottle.arr[2]] = true;
 
-        List<Integer> result = new LinkedList<>();
-        result.add(C);
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                if(i == j) continue;
 
-        while(!que.isEmpty()) {
-            Bottle cur = que.poll();
-
-            for(int i = 0; i < 3; i++) {
-                for(int j = 0; j < 3; j++) {
-                    if(i == j) continue;
-
-                    Bottle next = cur.move(i, j, LIMIT);
-                    if(VISIT[next.arr[0]][next.arr[1]][next.arr[2]]) continue;
-
-                    que.add(next);
-                    VISIT[next.arr[0]][next.arr[1]][next.arr[2]] = true;
-
-                    if(next.arr[0] == 0) {
-                        result.add(next.arr[2]);
-                    }
+                Bottle next = bottle.move(i, j, LIMIT);
+                if(!VISIT[next.arr[0]][next.arr[1]][next.arr[2]]) {
+                    dfs(next);
                 }
             }
         }
-
-        Collections.sort(result);
-        for(int v : result) {
-            sb.append(v).append(" ");
-        }
     }
+
 
     private static void input() {
         InputProcessor inputProcessor = new InputProcessor();
@@ -121,6 +89,7 @@ public class BOJ2251 {
 
         VISIT = new boolean[201][201][201];
         LIMIT = new int[]{A, B, C};
+        POSSIBLE = new boolean[201];
     }
 
     private static void output() throws IOException {
