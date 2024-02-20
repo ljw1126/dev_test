@@ -8,29 +8,27 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
- * 현명한 나이트(실버1)
- * https://www.acmicpc.net/problem/18404
+ * 나이트 이동(실버1)
+ * https://www.acmicpc.net/problem/7562
  *
- * - N * N 체스판
- * - M개의 상대편 말
- * - 노드 수 : N * N, 간선의 수 N * N * 8(나이트 이동 방향)
- * - 시간 복잡도 : O(V + E) = O(N * N * 8)
+ * - I : 300
+ * - 노드 : 300 * 300
+ * - 간선 : 300 * 300 * 8 (나이트 이동 방향)
  *
- * - bfs로 이동 거리 구한 후 DIST 조회하도록 함
+ * 시간복잡도 : O(V + E)
  */
-public class BOJ18404 {
+public class BOJ7562 {
+
     static StringBuilder sb = new StringBuilder();
-    static int MAX_VALUE = 250001;
     static int[][] DIR = {
-            {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
-            {1, -2}, {1, 2}, {2, -1}, {2, 1}
+            {2, 1}, {-2, -1}, {-2, 1}, {2, -1},
+            {1, 2}, {-1, -2}, {-1, 2}, {1, -2}
     };
-    static int N, M, X1, Y1, X2, Y2;
+    static int T, I, X1, Y1, X2, Y2;
+    static int[][] MATRIX;
     static int[][] DIST;
 
     public static void main(String[] args) throws IOException {
@@ -39,17 +37,43 @@ public class BOJ18404 {
         output();
     }
 
-    private static void pro(int x1, int y1) {
-        bfs(x1, y1);
+    private static void pro(int x1, int y1, int x2, int y2) {
+        bfs(x1, y1, x2, y2);
+
+        sb.append(DIST[x2][y2]).append("\n");
     }
 
-    private static void bfs(int startX, int startY) {
-        Deque<Integer> que = new ArrayDeque<>();
-        que.add(startX);
-        que.add(startY);
+    private static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        T = inputProcessor.nextInt();
 
-        for(int i = 1; i <= N; i++) Arrays.fill(DIST[i], MAX_VALUE);
-        DIST[startX][startY] = 0;
+        while(T > 0) {
+            I = inputProcessor.nextInt();
+            MATRIX = new int[I][I];
+            DIST = new int[I][I];
+            // 시작 위치
+            X1 = inputProcessor.nextInt();
+            Y1 = inputProcessor.nextInt();
+
+            // 도착 위치
+            X2 = inputProcessor.nextInt();
+            Y2 = inputProcessor.nextInt();
+
+            pro(X1, Y1, X2, Y2);
+
+            T -= 1;
+        }
+    }
+
+    private static void bfs(int x1, int y1, int x2, int y2) {
+        Deque<Integer> que = new ArrayDeque<>();
+        que.add(x1);
+        que.add(y1);
+
+        for(int i = 0; i < I; i++) {
+            Arrays.fill(DIST[i], -1);
+        }
+        DIST[x1][y1] = 0;
 
         while(!que.isEmpty()) {
             int x = que.poll();
@@ -59,35 +83,15 @@ public class BOJ18404 {
                 int nx = x + DIR[i][0];
                 int ny = y + DIR[i][1];
 
-                if(nx < 1 || ny < 1 || nx > N || ny > N) continue;
+                if(nx < 0 || ny < 0 || nx >= I || ny >= I) continue;
+                if(DIST[nx][ny] != -1) continue;
 
-                if(DIST[nx][ny] > DIST[x][y] + 1) {
-                    DIST[nx][ny] = DIST[x][y] + 1;
-                    que.add(nx);
-                    que.add(ny);
-                }
+                DIST[nx][ny] = DIST[x][y] + 1;
+                que.add(nx);
+                que.add(ny);
             }
         }
-    }
 
-    private static void input() {
-        InputProcessor inputProcessor = new InputProcessor();
-        N = inputProcessor.nextInt(); // N * N
-        M = inputProcessor.nextInt(); // 상대편 말의 위치
-
-        // 나이트 위치
-        X1 = inputProcessor.nextInt();
-        Y1 = inputProcessor.nextInt();
-
-        DIST = new int[N + 1][N + 1];
-        pro(X1, Y1);
-
-        for(int i = 1; i <= M; i++) {
-            X2 = inputProcessor.nextInt();
-            Y2 = inputProcessor.nextInt();
-
-            sb.append(DIST[X2][Y2]).append(" ");
-        }
     }
 
     private static void output() throws IOException {

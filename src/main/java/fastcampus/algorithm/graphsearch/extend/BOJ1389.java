@@ -1,10 +1,16 @@
 package fastcampus.algorithm.graphsearch.extend;
 
-import org.bouncycastle.jcajce.provider.symmetric.ARC4;
-
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * 케빈 베이커의 6단계 법칙 https://www.acmicpc.net/problem/1389
@@ -14,84 +20,121 @@ import java.util.*;
  */
 public class BOJ1389 {
     static StringBuilder sb = new StringBuilder();
-
     static int N, M;
+    static List<Integer>[] ADJ;
+    static int[] DIST;
 
-    static int[] distance;
-    static List<Integer>[] adj;
+    public static void main(String[] args) throws IOException {
+        input();
 
+        pro();
 
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-
-        adj = new ArrayList[N + 1];
-        for(int i = 0; i <= N; i++) adj[i] = new ArrayList<>();
-
-        for(int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine());
-            int from = Integer.parseInt(st.nextToken());
-            int to = Integer.parseInt(st.nextToken());
-
-            adj[from].add(to);
-            adj[to].add(from);
-        }
-
-        distance = new int[N + 1];
-
-        br.close();
+        output();
     }
 
-    static void bfs(int start) {
-        Queue<Integer> que = new LinkedList<>();
-        que.add(start);
-
-        for(int i = 0; i <= N ; i++) {
-            distance[i] = -1;
-        }
-        distance[start] = 0;
-
-        while(!que.isEmpty()) {
-            int x = que.poll();
-
-            for(int y : adj[x]) {
-                if(distance[y] == -1) {
-                    distance[y] = distance[x] + 1;
-                    que.add(y);
-                }
-            }
-        }
-    }
-
-    static int kevinBacon(int target) {
-        int cnt = 0;
+    private static void pro() {
+        int min = Integer.MAX_VALUE;
+        int result = N;
         for(int i = 1; i <= N; i++) {
-            cnt += distance[i];
-        }
-
-        return cnt;
-    }
-
-    static void pro() {
-        int minValue = Integer.MAX_VALUE;
-        int result = -1;
-        for(int i = 1; i <= N; i++) {
-            bfs(i);
-            int cnt = kevinBacon(i);
-            if(minValue > cnt) {
-                minValue = cnt;
+            int kevin = bfs(i);
+            if(min > kevin) { // 가장 작은 케빈 베이컨을 가지는 인덱스
+                min = kevin;
                 result = i;
             }
         }
 
-        System.out.println(result);
+        sb.append(result);
     }
 
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
+    private static int bfs(int start) {
+        Deque<Integer> que = new ArrayDeque<>();
+        que.add(start);
+
+        Arrays.fill(DIST, -1);
+        DIST[start] = 0;
+
+        while(!que.isEmpty()) {
+            int cur = que.poll();
+
+            for(int next : ADJ[cur]) {
+                if(DIST[next] != -1) continue;
+
+                DIST[next] = DIST[cur] + 1;
+                que.add(next);
+            }
+        }
+
+        int kevin = 0;
+        for(int i = 1; i <= N; i++) {
+            kevin += DIST[i];
+        }
+
+        return kevin;
+    }
+
+    private static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt();
+        M = inputProcessor.nextInt();
+
+        ADJ = new ArrayList[N + 1];
+        for(int i = 1; i <= N; i++) {
+            ADJ[i] = new ArrayList<>();
+        }
+
+        for(int i = 1; i <= M; i++) {
+            int from = inputProcessor.nextInt();
+            int to = inputProcessor.nextInt();
+            ADJ[from].add(to);
+            ADJ[to].add(from);
+        }
+
+        DIST = new int[N + 1];
+    }
+    private static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
+    private static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }

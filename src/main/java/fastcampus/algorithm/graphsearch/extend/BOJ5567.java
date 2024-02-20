@@ -1,73 +1,125 @@
 package fastcampus.algorithm.graphsearch.extend;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class BOJ5567 {
     static StringBuilder sb = new StringBuilder();
-
     static int N, M;
+    static List<Integer>[] ADJ;
+    static int[] DIST;
 
-    static int[] distance;
-    static List<Integer>[] adj;
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+    public static void main(String[] args) throws IOException {
+        input();
 
-        //동기의 수 (상근은 1)
-        N = Integer.parseInt(st.nextToken());
+        pro();
 
-        st = new StringTokenizer(br.readLine());
-        M = Integer.parseInt(st.nextToken());
-
-        distance = new int[N + 1];
-        adj = new ArrayList[N + 1];
-        for(int i = 0; i <= N; i++) adj[i] = new ArrayList<>();
-
-        for(int i = 1; i <= M; i++) {
-            st = new StringTokenizer(br.readLine());
-            int from = Integer.parseInt(st.nextToken());
-            int to = Integer.parseInt(st.nextToken());
-
-            adj[from].add(to);
-            adj[to].add(from);
-        }
+        output();
     }
 
-    static void bfs() {
-        Queue<Integer> que = new LinkedList<>();
-        que.add(1);
+    private static void pro() {
+        bfs(1);
 
-        for(int i = 0; i <= N; i++) distance[i] = -1;
+        int count = 0;
+        for(int i = 2; i <= N; i++) {
+            if(DIST[i] != -1 && DIST[i] <= 2) count += 1;
+        }
 
-        distance[1] = 0;
+        sb.append(count);
+    }
+
+    private static void bfs(int start) {
+        Deque<Integer> que = new ArrayDeque<>();
+        que.add(start);
+
+        Arrays.fill(DIST, -1);
+        DIST[start] = 0;
 
         while(!que.isEmpty()) {
-            int x = que.poll();
+            int cur = que.poll();
 
-            for(int y : adj[x]) {
-                if(distance[y] == -1) {
-                    distance[y] = distance[x] + 1;
-                    que.add(y);
-                }
+            for(int next : ADJ[cur]) {
+                if(DIST[next] != -1) continue;
+
+                DIST[next] = DIST[cur] + 1;
+                que.add(next);
             }
         }
     }
 
-    static void pro() {
-        bfs();
-        //친구와 친구의 친구까지 초대하려고 하니 2이하만 카운팅
-        int cnt = 0;
-        for(int i = 2; i <= N; i++) {
-            if(distance[i] == 1 || distance[i] == 2) cnt += 1;
+    private static void input() {
+        InputProcessor inputProcessor = new InputProcessor();
+        N = inputProcessor.nextInt(); // 동기의 수
+        M = inputProcessor.nextInt(); // 리스트 길이(간선)
+
+        ADJ = new ArrayList[N + 1];
+        for(int i = 1; i <= N; i++) {
+            ADJ[i] = new ArrayList<>();
         }
 
-        System.out.println(cnt);
+        for(int i = 1; i <= M; i++) {
+            int from = inputProcessor.nextInt();
+            int to = inputProcessor.nextInt();
+
+            ADJ[from].add(to);
+            ADJ[to].add(from);
+        }
+
+        DIST = new int[N + 1];
+    }
+    private static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
     }
 
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
+    private static class InputProcessor {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public String next() {
+            while(st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }
