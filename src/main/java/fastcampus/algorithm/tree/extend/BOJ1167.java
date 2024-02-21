@@ -1,4 +1,4 @@
-package fastcampus.algorithm.tree;
+package fastcampus.algorithm.tree.extend;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

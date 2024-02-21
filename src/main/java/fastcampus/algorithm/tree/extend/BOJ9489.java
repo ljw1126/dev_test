@@ -1,4 +1,4 @@
-package fastcampus.algorithm.tree;
+package fastcampus.algorithm.tree.extend;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
  * - 부모노드가 같지 않고, 부모노드의 조상노드가 같다면 형제다 (포인트)
  * - 참고 https://velog.io/@tunaman95/%EB%B0%B1%EC%A4%80-9489%EB%B2%88-%EC%82%AC%EC%B4%8C-Python-Java
  * - 처응에 parent 와 depth로 구해서 풀었는데 틀렸다함
+ * - PARENT와 TARGET_IDX만 잘 구하면 됨!! O(N)
  * DATA [0, 1, 3, 4, 5, 8, 9, 15, 30, 31, 32]
  * PARENT [-1, 0, 1, 1, 1, 2, 2, 3, 4, 4, 4]
  *
