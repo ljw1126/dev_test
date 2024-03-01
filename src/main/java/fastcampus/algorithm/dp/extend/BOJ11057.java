@@ -1,55 +1,58 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
- * 1,2,3 더하기 (실버3) https://www.acmicpc.net/problem/9095
+ * 오르막수 (실버1)
+ * https://www.acmicpc.net/problem/11057
  *
- * 가짜 문제 정의 -> 가짜문제로 풀 수 있는가 ? -> 초기항 정의 -> 점화식
- * 점화식 : DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3]
- * 시간복잡도 : O(N)
+ * 직접 풀이
+ * 시간복잡도 : O(N * 10^2)
+ * 점화식 : DP[i][j] += DP[i - 1][k] , 이때 k 는 0 ~ j까지
  */
-public class BOJ9095 {
-
+public class BOJ11057 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
-    static String NEW_LINE = System.lineSeparator();
+
+    static int MOD = 10007;
+    static int[][] DP;
     static int N;
-    static int[] DP;
 
     public static void main(String[] args) throws IOException {
-        preprocess();
-
-        int T = inputProcessor.nextInt();
-        while(T > 0) {
-            input();
-            sb.append(DP[N]).append(NEW_LINE);
-
-            T -= 1;
-        }
-
+        input();
+        pro();
         output();
-    }
-
-    private static void preprocess() {
-        DP = new int[12];
-        // 초기화
-        DP[1] = 1;
-        DP[2] = 2;
-        DP[3] = 4;
-
-        for(int i = 4; i <= 11; i++) {
-            DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3];
-        }
     }
 
     private static void input() {
         N = inputProcessor.nextInt();
+        DP = new int[N + 1][10];
+        Arrays.fill(DP[1], 1); // 1 자리인 경우 1로 초기화
+    }
+
+    private static void pro() {
+        for(int len = 2; len <= N; len++) {
+            for(int i = 0; i <= 9; i++) {
+                for(int prev = 0; prev <= i; prev++) {
+                    DP[len][i] += DP[len - 1][prev];
+                    DP[len][i] %= MOD;
+                }
+            }
+        }
+
+        int result = 0;
+        for(int i = 0; i <= 9; i++) {
+            result += DP[N][i];
+            result %= MOD;
+        }
+
+        sb.append(result);
     }
 
     private static void output() throws IOException {

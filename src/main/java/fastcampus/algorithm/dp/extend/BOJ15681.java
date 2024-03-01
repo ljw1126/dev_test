@@ -1,56 +1,79 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * 1,2,3 더하기 (실버3) https://www.acmicpc.net/problem/9095
+ * 트리와 쿼리(골5)
+ * https://www.acmicpc.net/problem/15681
  *
- * 가짜 문제 정의 -> 가짜문제로 풀 수 있는가 ? -> 초기항 정의 -> 점화식
- * 점화식 : DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3]
- * 시간복잡도 : O(N)
+ * - 직접 풀이
+ * - 시간 복잡도 : O(V + E)
+ * - 트리 유형에서도 풀었던 건데 좋은 문제
  */
-public class BOJ9095 {
-
+public class BOJ15681 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
+
     static String NEW_LINE = System.lineSeparator();
-    static int N;
-    static int[] DP;
+    static int N, R, Q;
+    static List<Integer>[] ADJ;
+    static int[] SUBTREE;
 
     public static void main(String[] args) throws IOException {
+        input();
         preprocess();
 
-        int T = inputProcessor.nextInt();
-        while(T > 0) {
-            input();
-            sb.append(DP[N]).append(NEW_LINE);
-
-            T -= 1;
+        for(int i = 1; i <= Q; i++) {
+            int u = inputProcessor.nextInt();
+            sb.append(SUBTREE[u]).append(NEW_LINE);
         }
 
         output();
     }
 
     private static void preprocess() {
-        DP = new int[12];
-        // 초기화
-        DP[1] = 1;
-        DP[2] = 2;
-        DP[3] = 4;
+        dfs(R, -1);
+    }
 
-        for(int i = 4; i <= 11; i++) {
-            DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3];
+    private static void dfs(int node, int prev) {
+        SUBTREE[node] = 1;
+
+        for(int child : ADJ[node]) {
+            if(child == prev) continue;
+
+            dfs(child, node);
+            SUBTREE[node] += SUBTREE[child];
         }
     }
 
     private static void input() {
-        N = inputProcessor.nextInt();
+        N = inputProcessor.nextInt(); // 정점의 수
+        R = inputProcessor.nextInt(); // 루트
+        Q = inputProcessor.nextInt(); // 쿼리의 수
+
+        ADJ = new ArrayList[N + 1];
+        for(int i = 1; i <= N; i++) {
+            ADJ[i] = new ArrayList<>();
+        }
+
+        for(int i = 1; i <= N - 1; i++) {
+            int u = inputProcessor.nextInt();
+            int v = inputProcessor.nextInt();
+
+            ADJ[u].add(v);
+            ADJ[v].add(u);
+        }
+
+        SUBTREE = new int[N + 1];
     }
+
 
     private static void output() throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));

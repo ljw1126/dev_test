@@ -1,55 +1,68 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
- * 1,2,3 더하기 (실버3) https://www.acmicpc.net/problem/9095
+ *  카드 구매 (실버1)
+ *  https://www.acmicpc.net/problem/11052
  *
- * 가짜 문제 정의 -> 가짜문제로 풀 수 있는가 ? -> 초기항 정의 -> 점화식
- * 점화식 : DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3]
- * 시간복잡도 : O(N)
+ * - 직접 풀이 못함
+ * - 시간 복잡도 : O(N^2)
  */
-public class BOJ9095 {
-
+public class BOJ11052 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
-    static String NEW_LINE = System.lineSeparator();
     static int N;
-    static int[] DP;
+    static int[] P, DP;
 
     public static void main(String[] args) throws IOException {
-        preprocess();
+        input();
 
-        int T = inputProcessor.nextInt();
-        while(T > 0) {
-            input();
-            sb.append(DP[N]).append(NEW_LINE);
-
-            T -= 1;
-        }
+        //bottomUp();
+        sb.append(topDown(N));
 
         output();
     }
 
-    private static void preprocess() {
-        DP = new int[12];
-        // 초기화
-        DP[1] = 1;
-        DP[2] = 2;
-        DP[3] = 4;
-
-        for(int i = 4; i <= 11; i++) {
-            DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3];
-        }
-    }
-
     private static void input() {
         N = inputProcessor.nextInt();
+        P = new int[N + 1];
+
+        for(int i = 1; i <= N; i++) {
+            P[i] = inputProcessor.nextInt();
+        }
+
+        DP = new int[N + 1];
+        Arrays.fill(DP, -1);
+        DP[0] = 0;
+        DP[1] = P[1];
+    }
+
+    private static void bottomUp() { // bottom-up 방식
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= i; j++) {
+                DP[i] = Math.max(DP[i], DP[i - j] + P[j]);
+            }
+        }
+
+        sb.append(DP[N]);
+    }
+
+    private static int topDown(int i) { // top-down 방식
+        if(i == 0) return 0;
+        if(DP[i] != -1) return DP[i];
+
+        for(int j = 1; j <= i; j++) {
+            DP[i] = Math.max(DP[i], topDown(i - j) + P[j]);
+        }
+
+        return DP[i];
     }
 
     private static void output() throws IOException {

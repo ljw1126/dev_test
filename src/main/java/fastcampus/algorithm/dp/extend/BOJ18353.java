@@ -1,4 +1,4 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

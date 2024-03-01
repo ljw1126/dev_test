@@ -1,83 +1,79 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import java.io.OutputStreamWriter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 /**
- * 우수마을(골드2) https://www.acmicpc.net/problem/1949
+ * RGB 거리(실버1) https://www.acmicpc.net/problem/1149
  *
- * rooted tree 를 알고 시작했는나
- * 루트 노드는 무엇을 골라야 하고, 초기화는 어떻게 해야 하고
- * 조합은 또 어떻게 해야하는지 전혀 알수 없었다
- * ==> DFS 알아도 방법이 떠오르지 않음
- *
- * (240228)
- * - DP[i][0] 점화식 틀림
- * - 그리고 dfs 돌면서 DP[i][1] = CITIZEN[i]로 초기화 생각 못함
+ * 상향식, 하향식 둘다 연습해보기 좋은 문제
+ * 시간복잡도 : O(N)
  */
-public class BOJ1949 {
+public class BOJ1149 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
 
-    static int ROOT = 1;
+    static int[][] DATA, DP;
     static int N;
-    static List<Integer>[] ADJ;
-    static int[] CITIZEN;
-    static int[][] DP;
 
     public static void main(String[] args) throws IOException {
         input();
-
         pro();
-
         output();
     }
 
     private static void input() {
         N = inputProcessor.nextInt();
-
-        CITIZEN = new int[N + 1]; // 주민 수
+        DATA = new int[N + 1][4];
         for(int i = 1; i <= N; i++) {
-            CITIZEN[i] = inputProcessor.nextInt();
+            for(int j = 1; j <= 3; j++) {
+                DATA[i][j] = inputProcessor.nextInt();
+            }
         }
 
-        ADJ = new ArrayList[N + 1];
-        for(int i = 1; i <= N; i++) {
-            ADJ[i] = new ArrayList<>();
-        }
-
-        for(int i = 1; i <= N - 1; i++) {
-            int a = inputProcessor.nextInt();
-            int b = inputProcessor.nextInt();
-
-            ADJ[a].add(b);
-            ADJ[b].add(a);
+        DP = new int[N + 1][4];
+        for(int i = 1; i <= 3; i++) {
+            DP[1][i] = DATA[1][i];
         }
     }
 
     private static void pro() {
-        DP = new int[N + 1][2]; // 초기화는 리프 노드에서
+        //bottomUp();
 
-        dfs(ROOT, - 1);
-
-        sb.append(Math.max(DP[ROOT][0], DP[ROOT][1]));
+        int result = Math.min(topDown(N, 1), Math.min(topDown(N , 2), topDown(N , 3)));
+        sb.append(result);
     }
 
-    private static void dfs(int node, int prev) {
-        DP[node][1] = CITIZEN[node];
-
-        for(int child : ADJ[node]) {
-            if(child == prev) continue;
-
-            dfs(child, node);
-
-            DP[node][0] += Math.max(DP[child][0], DP[child][1]);
-            DP[node][1] += DP[child][0];
+    private static void bottomUp() {
+        for(int i = 2; i <= N; i++) {
+            DP[i][1] = Math.min(DP[i - 1][2], DP[i - 1][3]) + DATA[i][1];
+            DP[i][2] = Math.min(DP[i - 1][1], DP[i - 1][3]) + DATA[i][2];
+            DP[i][3] = Math.min(DP[i - 1][1], DP[i - 1][2]) + DATA[i][3];
         }
+
+        int result = Math.min(DP[N][1], Math.min(DP[N][2], DP[N][3]));
+        sb.append(result);
+    }
+
+    private static int topDown(int row, int col) {
+        if(row < 1) return 0;
+        if(DP[row][col] != 0) return DP[row][col];
+
+        if(col == 1) {
+            DP[row][col] = Math.min(topDown(row - 1, 2), topDown(row - 1, 3)) + DATA[row][col];
+        } else if(col == 2) {
+            DP[row][col] = Math.min(topDown(row - 1, 1), topDown(row - 1, 3)) + DATA[row][col];
+        } else if(col == 3) {
+            DP[row][col] = Math.min(topDown(row - 1, 1), topDown(row - 1, 2)) + DATA[row][col];
+        }
+
+        return DP[row][col];
     }
 
     private static void output() throws IOException {

@@ -1,4 +1,4 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,37 +9,34 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
- * 파일 합치기 (골드3) https://www.acmicpc.net/problem/11066
+ * 줄어들지 않아(실버1)
+ * https://www.acmicpc.net/problem/2688
  *
- * 직접 풀이 못함
- * sum[][] 의 경우 (N^2)
- * DP[][] 의 경우 (N^3)
- *
- * 재풀이시 직접 풀이 (240228)
+ * 상향식, 하향식 연습하기 좋은 기본 문제
+ * 시간복잡도 : O(64 * 10^2)
  */
-public class BOJ11066 {
-
+public class BOJ2688 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
-    static String NEW_LINE = System.lineSeparator();
 
     static int T, N;
-    static int[] FILES;
     static long[][] DP;
-    static int[][] SUM;
-
 
     public static void main(String[] args) throws IOException {
+        //preprocess(); // 전처리 - bottom-up
+        pro(); // top-down 초기화
+
         T = inputProcessor.nextInt();
         while(T > 0) {
-            input();
+            N = inputProcessor.nextInt();
 
-            preprocess();
+            long result = 0L;
+            for(int i = 0; i <= 9; i++) {
+                //result += DP[N][i];
+                result += topDown(N, i);
+            }
 
-            //bottomUp();
-            //sb.append(DP[1][N]).append(NEW_LINE);
-
-            sb.append(topDown(1, N)).append(NEW_LINE);
+            sb.append(result).append("\n");
 
             T -= 1;
         }
@@ -47,59 +44,36 @@ public class BOJ11066 {
         output();
     }
 
-    private static void preprocess() {
-        SUM = new int[N + 1][N + 1];
-        for(int i = 1; i <= N; i++) {
-            SUM[i][i] = FILES[i];
-            for(int j = i + 1; j <= N; j++) {
-                SUM[i][j] = SUM[i][j - 1] + FILES[j];
-            }
-        }
+    private static void pro() {
+        DP = new long[65][10];
+        Arrays.fill(DP[1], 1);
     }
 
-    private static void input() {
-        N = inputProcessor.nextInt();
+    private static void preprocess() {
+        DP = new long[65][10];
+        Arrays.fill(DP[1], 1);
 
-        FILES = new int[N + 1];
-        for(int i = 1; i <= N; i++) {
-            FILES[i] = inputProcessor.nextInt();
-        }
+        bottomUp();
     }
 
     private static void bottomUp() {
-        DP = new long[N + 1][N + 1];
-
-        for(int len = 2; len <= N; len++) {
-            for(int i = 1; i <= N - len + 1; i++) {
-                int j = i + len - 1;
-
-                DP[i][j] = Integer.MAX_VALUE; // 초기화*
-                for(int k = i; k < j; k++) {
-                    DP[i][j] = Math.min(DP[i][j], DP[i][k] + DP[k + 1][j] + SUM[i][j]);
+        for(int len = 2; len <= 64; len++) {
+            for(int i = 0; i <= 9; i++) {
+                for(int j = 0; j <= i; j++) {
+                    DP[len][i] += DP[len - 1][j];
                 }
             }
         }
     }
 
-    private static long topDown(int a, int b) {
-        DP = new long[N + 1][N + 1];
-        // 초기화
-        for(int i = 1; i <= N; i++) {
-            Arrays.fill(DP[i], 1, N + 1, Integer.MAX_VALUE);
+    private static long topDown(int n, int idx) {
+        if(DP[n][idx] != 0) return DP[n][idx];
+
+        for(int k = 0; k <= idx; k++) {
+            DP[n][idx] += topDown(n - 1, k);
         }
 
-        return rec(a, b);
-    }
-
-    private static long rec(int i, int j) {
-        if(i == j) return 0L;
-        if(DP[i][j] != Integer.MAX_VALUE) return DP[i][j];
-
-        for(int k = i; k < j; k++) {
-            DP[i][j] = Math.min(DP[i][j], rec(i, k) + rec(k + 1, j) + SUM[i][j]);
-        }
-
-        return DP[i][j];
+        return DP[n][idx];
     }
 
     private static void output() throws IOException {

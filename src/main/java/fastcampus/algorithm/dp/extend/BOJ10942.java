@@ -1,4 +1,4 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,97 +9,84 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
- * 파일 합치기 (골드3) https://www.acmicpc.net/problem/11066
+ * 팰린드롬? (골드4) https://www.acmicpc.net/problem/10942
  *
- * 직접 풀이 못함
- * sum[][] 의 경우 (N^2)
- * DP[][] 의 경우 (N^3)
+ * 수열 N ( 1 ~ 2000)
+ * 질문의 개수 M ( 1 ~ 10^6)
  *
- * 재풀이시 직접 풀이 (240228)
+ * N * N 2차원 배열 선언시 int의 경우 2000 * 2000 * 4byte = 16Mb
+ *
+ * 3이상의 경우 시작과 끝 수가 동일하고, 양 끝 사이가 펠린드롬이라면 DP[i + 1][j - 1]
  */
-public class BOJ11066 {
-
+public class BOJ10942 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
     static String NEW_LINE = System.lineSeparator();
 
-    static int T, N;
-    static int[] FILES;
-    static long[][] DP;
-    static int[][] SUM;
-
+    static int N, M;
+    static int[] DATA;
+    static int[][] PALINDROME; // boolean : 1byte, int : 4byte
 
     public static void main(String[] args) throws IOException {
-        T = inputProcessor.nextInt();
-        while(T > 0) {
-            input();
+        input();
 
-            preprocess();
+        preprocess();
+        //bottomUp();
 
-            //bottomUp();
-            //sb.append(DP[1][N]).append(NEW_LINE);
+        M = inputProcessor.nextInt();
+        for(int i = 1; i <= M; i++) {
+            int s = inputProcessor.nextInt();
+            int e = inputProcessor.nextInt();
 
-            sb.append(topDown(1, N)).append(NEW_LINE);
-
-            T -= 1;
+            //sb.append(PALINDROME[s][e]).append(NEW_LINE);
+            sb.append(topDown(s, e)).append(NEW_LINE);
         }
 
         output();
     }
 
+    private static int topDown(int s, int e) {
+        if(s == e) return 1;
+        if(PALINDROME[s][e] != -1) return PALINDROME[s][e];
+
+        return PALINDROME[s][e] = (DATA[s] == DATA[e] && topDown(s + 1, e - 1)  == 1) ? 1 : 0;
+    }
+
+    /**
+     * top-down 사용하려면 방문하지 않았다는 의미를 표기할 필요가 있는데
+     * boolean은 true/false 뿐이라서 정보 표현하기 어려움
+     */
     private static void preprocess() {
-        SUM = new int[N + 1][N + 1];
+        PALINDROME = new int[N + 1][N + 1];
         for(int i = 1; i <= N; i++) {
-            SUM[i][i] = FILES[i];
-            for(int j = i + 1; j <= N; j++) {
-                SUM[i][j] = SUM[i][j - 1] + FILES[j];
-            }
+            Arrays.fill(PALINDROME[i], 1, N + 1, -1);
+            PALINDROME[i][i] = 1;
+        }
+
+        for(int i = 1; i < N; i++) {
+            if(DATA[i] == DATA[i + 1]) PALINDROME[i][i + 1] = 1;
+            else PALINDROME[i][i + 1] = 0;
         }
     }
 
     private static void input() {
         N = inputProcessor.nextInt();
 
-        FILES = new int[N + 1];
+        DATA = new int[N + 1];
         for(int i = 1; i <= N; i++) {
-            FILES[i] = inputProcessor.nextInt();
+            DATA[i] = inputProcessor.nextInt();
         }
     }
 
     private static void bottomUp() {
-        DP = new long[N + 1][N + 1];
-
-        for(int len = 2; len <= N; len++) {
+        for(int len = 3; len <= N; len++) {
             for(int i = 1; i <= N - len + 1; i++) {
                 int j = i + len - 1;
-
-                DP[i][j] = Integer.MAX_VALUE; // 초기화*
-                for(int k = i; k < j; k++) {
-                    DP[i][j] = Math.min(DP[i][j], DP[i][k] + DP[k + 1][j] + SUM[i][j]);
+                if(DATA[i] == DATA[j] && PALINDROME[i + 1][j - 1] == 1) {
+                    PALINDROME[i][j] = 1;
                 }
             }
         }
-    }
-
-    private static long topDown(int a, int b) {
-        DP = new long[N + 1][N + 1];
-        // 초기화
-        for(int i = 1; i <= N; i++) {
-            Arrays.fill(DP[i], 1, N + 1, Integer.MAX_VALUE);
-        }
-
-        return rec(a, b);
-    }
-
-    private static long rec(int i, int j) {
-        if(i == j) return 0L;
-        if(DP[i][j] != Integer.MAX_VALUE) return DP[i][j];
-
-        for(int k = i; k < j; k++) {
-            DP[i][j] = Math.min(DP[i][j], rec(i, k) + rec(k + 1, j) + SUM[i][j]);
-        }
-
-        return DP[i][j];
     }
 
     private static void output() throws IOException {

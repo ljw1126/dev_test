@@ -1,4 +1,4 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,97 +9,78 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
- * 파일 합치기 (골드3) https://www.acmicpc.net/problem/11066
+ * 행렬 곱셈 순서 (골드3) https://www.acmicpc.net/problem/11049
  *
- * 직접 풀이 못함
- * sum[][] 의 경우 (N^2)
- * DP[][] 의 경우 (N^3)
+ * - 행렬의 곱셈 규칙에 대해 이해하고 있어야 함
+ * - 로직은 BOJ11066 파일 합치기와 거의 비슷
+ * - 시간복잡도 O(N^3)
  *
- * 재풀이시 직접 풀이 (240228)
+ * 새로운 문제를 만나니 시야가 계속 좁아지네
+ * row date에 대한 조합을 구하는 형태에 대해 숙지해두자
  */
-public class BOJ11066 {
-
+public class BOJ11049 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
-    static String NEW_LINE = System.lineSeparator();
 
-    static int T, N;
-    static int[] FILES;
-    static long[][] DP;
-    static int[][] SUM;
-
+    static int N;
+    static int[][] MATRIX;
+    static int[][] DP;
 
     public static void main(String[] args) throws IOException {
-        T = inputProcessor.nextInt();
-        while(T > 0) {
-            input();
+        input();
 
-            preprocess();
+        preprocess();
+        //bottomUp();
+        //sb.append(DP[1][N]);
 
-            //bottomUp();
-            //sb.append(DP[1][N]).append(NEW_LINE);
-
-            sb.append(topDown(1, N)).append(NEW_LINE);
-
-            T -= 1;
-        }
+        sb.append(topDown(1, N));
 
         output();
     }
 
-    private static void preprocess() {
-        SUM = new int[N + 1][N + 1];
-        for(int i = 1; i <= N; i++) {
-            SUM[i][i] = FILES[i];
-            for(int j = i + 1; j <= N; j++) {
-                SUM[i][j] = SUM[i][j - 1] + FILES[j];
-            }
-        }
-    }
 
     private static void input() {
         N = inputProcessor.nextInt();
 
-        FILES = new int[N + 1];
+        MATRIX = new int[N + 1][2];
         for(int i = 1; i <= N; i++) {
-            FILES[i] = inputProcessor.nextInt();
+            MATRIX[i][0] = inputProcessor.nextInt();
+            MATRIX[i][1] = inputProcessor.nextInt();
+        }
+    }
+
+    private static void preprocess() {
+        DP = new int[N + 1][N + 1];
+        for(int i = 1; i < N; i++) {
+            Arrays.fill(DP[i], 1, N + 1, Integer.MAX_VALUE);
+
+            DP[i][i] = 0;
+            DP[i][i + 1] = MATRIX[i][0] * MATRIX[i][1] * MATRIX[i + 1][1];
         }
     }
 
     private static void bottomUp() {
-        DP = new long[N + 1][N + 1];
-
-        for(int len = 2; len <= N; len++) {
+        for(int len = 3; len <= N; len++) {
             for(int i = 1; i <= N - len + 1; i++) {
                 int j = i + len - 1;
 
-                DP[i][j] = Integer.MAX_VALUE; // 초기화*
+                DP[i][j] = Integer.MAX_VALUE;
                 for(int k = i; k < j; k++) {
-                    DP[i][j] = Math.min(DP[i][j], DP[i][k] + DP[k + 1][j] + SUM[i][j]);
+                    DP[i][j] = Math.min(DP[i][j], DP[i][k] + DP[k + 1][j] + (MATRIX[i][0] * MATRIX[k][1] * MATRIX[j][1])); // 행렬 곱셈 공식
                 }
             }
         }
     }
 
-    private static long topDown(int a, int b) {
-        DP = new long[N + 1][N + 1];
-        // 초기화
-        for(int i = 1; i <= N; i++) {
-            Arrays.fill(DP[i], 1, N + 1, Integer.MAX_VALUE);
+    private static int topDown(int a, int b) {
+        if(a == b) return DP[a][b];
+        if(DP[a][b] != Integer.MAX_VALUE) return DP[a][b];
+
+        for(int k = a; k < b; k++) {
+            DP[a][b] = Math.min(DP[a][b], topDown(a, k) + topDown(k + 1, b) + (MATRIX[a][0] * MATRIX[k][1] * MATRIX[b][1]));
         }
 
-        return rec(a, b);
-    }
-
-    private static long rec(int i, int j) {
-        if(i == j) return 0L;
-        if(DP[i][j] != Integer.MAX_VALUE) return DP[i][j];
-
-        for(int k = i; k < j; k++) {
-            DP[i][j] = Math.min(DP[i][j], rec(i, k) + rec(k + 1, j) + SUM[i][j]);
-        }
-
-        return DP[i][j];
+        return DP[a][b];
     }
 
     private static void output() throws IOException {

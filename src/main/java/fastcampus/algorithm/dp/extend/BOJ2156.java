@@ -1,83 +1,83 @@
-package fastcampus.algorithm.dp;
+package fastcampus.algorithm.dp.extend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 /**
- * 우수마을(골드2) https://www.acmicpc.net/problem/1949
+ * 포도주 시식(실버1) https://www.acmicpc.net/problem/2156
  *
- * rooted tree 를 알고 시작했는나
- * 루트 노드는 무엇을 골라야 하고, 초기화는 어떻게 해야 하고
- * 조합은 또 어떻게 해야하는지 전혀 알수 없었다
- * ==> DFS 알아도 방법이 떠오르지 않음
+ * - 직절 풀지 못함 (24/2/27)
+ * - 시간복잡도 O(N)
  *
- * (240228)
- * - DP[i][0] 점화식 틀림
- * - 그리고 dfs 돌면서 DP[i][1] = CITIZEN[i]로 초기화 생각 못함
+ * 연속으로 3잔을 마실 수 없을 때 아래의 경우에 따라 DP 테이블을 채우면 DP[N]에 최대값이 구해짐
+ * case1. i 번째 포도주를 마시지 않는 경우 = DP[i - 1]
+ * case2. i 번재, i - 1번째 포도주를 마시고, DP[i - 3]을 마시는 경우
+ * case3. i번째 포도주를 마시고, DP[i - 2]를 마시는 경우
+ *
+ * top-down 재귀 방식으로 풀이 가능
+ * https://st-lab.tistory.com/135
  */
-public class BOJ1949 {
+public class BOJ2156 {
     static StringBuilder sb = new StringBuilder();
     static InputProcessor inputProcessor = new InputProcessor();
-
-    static int ROOT = 1;
+    static int[] DATA;
     static int N;
-    static List<Integer>[] ADJ;
-    static int[] CITIZEN;
-    static int[][] DP;
+    static int[] DP;
 
     public static void main(String[] args) throws IOException {
         input();
-
         pro();
-
         output();
     }
 
     private static void input() {
         N = inputProcessor.nextInt();
+        DP = new int[N + 1];
 
-        CITIZEN = new int[N + 1]; // 주민 수
+        DATA = new int[N + 1];
         for(int i = 1; i <= N; i++) {
-            CITIZEN[i] = inputProcessor.nextInt();
+            DATA[i] = inputProcessor.nextInt();
         }
 
-        ADJ = new ArrayList[N + 1];
-        for(int i = 1; i <= N; i++) {
-            ADJ[i] = new ArrayList<>();
-        }
+        Arrays.fill(DP, -1);
 
-        for(int i = 1; i <= N - 1; i++) {
-            int a = inputProcessor.nextInt();
-            int b = inputProcessor.nextInt();
-
-            ADJ[a].add(b);
-            ADJ[b].add(a);
+        // 초기화
+        DP[0] = 0;
+        DP[1] = DATA[1];
+        if(N >= 2) {
+            DP[2] = DATA[1] + DATA[2];
         }
     }
 
     private static void pro() {
-        DP = new int[N + 1][2]; // 초기화는 리프 노드에서
+        //bottomUp();
 
-        dfs(ROOT, - 1);
-
-        sb.append(Math.max(DP[ROOT][0], DP[ROOT][1]));
+        topDown(N);
+        sb.append(DP[N]);
     }
 
-    private static void dfs(int node, int prev) {
-        DP[node][1] = CITIZEN[node];
-
-        for(int child : ADJ[node]) {
-            if(child == prev) continue;
-
-            dfs(child, node);
-
-            DP[node][0] += Math.max(DP[child][0], DP[child][1]);
-            DP[node][1] += DP[child][0];
+    private static void bottomUp() {
+        for(int i = 3; i <= N; i++) {
+            DP[i] = DP[i - 1];
+            DP[i] = Math.max(DP[i], Math.max(DATA[i - 1] + DP[i - 3], DP[i - 2]) + DATA[i]);
         }
+
+        sb.append(DP[N]);
+    }
+
+    private static int topDown(int n) {
+        if(n < 1) return 0;
+        if(DP[n] != -1) return DP[n];
+
+        DP[n] = topDown(n - 1);
+        DP[n] = Math.max(DP[n], Math.max(DATA[n - 1] + topDown(n - 3), topDown(n - 2)) + DATA[n]);
+
+        return DP[n];
     }
 
     private static void output() throws IOException {
