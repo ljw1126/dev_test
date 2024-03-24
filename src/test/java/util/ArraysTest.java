@@ -219,7 +219,23 @@ public class ArraysTest {
         // when
         // then
         assertThat(list).hasSize(4); // true
+    }
+
+    @DisplayName("Arrays.ArrayList 는 add(), remove() 호출시 예외를 반환한다")
+    @Test
+    void asListThrowException() {
+        List<Integer> list = Arrays.asList(4, 5, 7, 3);
+
         assertThatThrownBy(() -> list.remove(0)).isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> list.add(0)).isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void set() {
+        List<Integer> list = Arrays.asList(4, 5, 7, 3);
+
+        list.set(0, -1);
+        assertThat(list.get(0)).isEqualTo(-1);
     }
 
     @DisplayName("")
