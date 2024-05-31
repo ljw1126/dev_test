@@ -1,7 +1,10 @@
 package fastcampus.algorithm.exam3;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.StringTokenizer;
@@ -9,90 +12,124 @@ import java.util.StringTokenizer;
 /**
  * 공정 컨설턴트 호석(골드3)
  * https://www.acmicpc.net/problem/22254
- *
+ * <p>
  * - 직접 풀이
  * - 1 ~ N까지 이진 탐색을 해서, 최소 라인 수를 구한다.
  * - 우선순위큐를 사용해서 limit를 안 넘는 경우 mid를 갱신하고 최소값이기때문에 R을 줄인다
- *  주문이 최대 10만건이 있고, 남은 시간 10억, 각 주문별 10억개가 소비될 때, 최소 10만건이 있어야 생산 가능
+ * 주문이 최대 10만건이 있고, 남은 시간 10억, 각 주문별 10억개가 소비될 때, 최소 10만건이 있어야 생산 가능
  */
 public class BOJ22254 {
-    static StringBuilder sb = new StringBuilder();
-    static int N;
-    static long X;
-    static long[] time;
+    private static StringBuilder sb = new StringBuilder();
+    private static InputProcessor inputProcessor = new InputProcessor();
 
-    static void input() throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        N = Integer.parseInt(st.nextToken());
-        X = Long.parseLong(st.nextToken());
+    public static void main(String[] args) throws IOException {
+        input();
+        pro();
+        output();
+    }
 
-        time = new long[N + 1];
-        st = new StringTokenizer(br.readLine());
-        for(int i = 1; i <= N; i++) {
-            time[i] = Long.parseLong(st.nextToken());
+    private static int N, X;
+    private static int[] PRODUCTS;
+
+    private static void input() {
+        N = inputProcessor.nextInt(); // 주문의 개수
+        X = inputProcessor.nextInt(); // 남은 시간
+
+        PRODUCTS = new int[N + 1];
+        for (int i = 1; i <= N; i++) {
+            PRODUCTS[i] = inputProcessor.nextInt(); // 선물별 공정시간
         }
     }
 
-    static class Line implements Comparable<Line> {
-        int idx;
-        long time;
-
-        public Line(int idx, long time) {
-            this.idx = idx;
-            this.time = time;
-        }
-
-        @Override
-        public int compareTo(Line o) { // 오름차순
-            if(time < o.time) return -1;
-            else if(time == o.time) return 0;
-            return 1;
-        }
-    }
-
-    static boolean possible(int lines, long limit) {
-        Queue<Line> que = new PriorityQueue<>();
-        for(int i = 1; i <= lines; i++) {
-            que.add(new Line(i, time[i]));
-        }
-
-        int idx = lines + 1;
-        while(idx <= N) {
-            Line cur = que.poll();
-
-            if(cur.time + time[idx] > limit) return false;
-
-            cur.time += time[idx];
-            que.add(cur);
-            idx += 1;
-        }
-
-        return true;
-    }
-
-    static void pro() {
+    // 기계를 n개 작업 했을때 X시간 내에 작업이 가능한가
+    // 개수만큼 선물을 넣고, 돌린다 (오름차순) 넣고
+    // 마지막에는 pop 을하는데 최종 시간이 K 이하이면 통과 아니면 실패
+    private static void pro() {
         int L = 1;
         int R = N;
-        int ans = 0;
+        int result = N;
+        while (L <= R) {
+            int mid = (L + R) / 2;
 
-        while(L <= R) {
-            int mid = (L + R) / 2; // 공정 라인 수
-
-            if(possible(mid, X)) {
-                ans = mid;
+            if (isPossible(mid)) {
                 R = mid - 1;
+                result = mid;
             } else {
                 L = mid + 1;
             }
         }
 
-        System.out.println(ans);
+        sb.append(result);
     }
 
-    public static void main(String[] args) throws Exception {
-        input();
-        pro();
+    private static boolean isPossible(int robot) {
+        Queue<Integer> que = new PriorityQueue<>(); // 오름차순
+        for (int i = 1; i <= robot; i++) {
+            que.add(PRODUCTS[i]);
+        }
+
+        for (int i = robot + 1; i <= N; i++) {
+            int cur = que.poll();
+
+            if (cur + PRODUCTS[i] > X) return false;
+
+            que.add(cur + PRODUCTS[i]);
+        }
+
+        int result = 0;
+        while (!que.isEmpty()) {
+            result = Math.max(result, que.poll());
+        }
+
+        return result <= X;
+    }
+
+    private static void output() throws IOException {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+    }
+
+    private static class InputProcessor {
+        private StringTokenizer st;
+        private BufferedReader br;
+
+        public InputProcessor() {
+            this.br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            return st.nextToken();
+        }
+
+        public String nextLine() {
+            String input = "";
+
+            try {
+                input = br.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return input;
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
     }
 }
