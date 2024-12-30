@@ -1,9 +1,30 @@
-package its.codingtest.graph;
+package its.codingtest.binarysearch;
 
 import java.io.*;
-import java.util.*;
+import java.util.StringTokenizer;
 
-public class p397_2 {
+/**
+ *  고정점 찾기
+ *  - 직접 풀이
+ *  - DATA[mid] == mid 인 경우 고정점
+ *  - 고정점이 아닌 경우 DATA[mid] < mid 크다면 L = mid + 1 (값이 음수이거나 작으니)
+ *
+ * 5
+ * -15 -6 1 3 7
+ *
+ * 출력 3
+ *
+ * 7
+ * -15 -4 2 8 9 13 15
+ *
+ * 출력 2
+ *
+ * 7
+ * -15 -4 3 8 9 13 15
+ *
+ * 출력 -1
+ */
+public class p368 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -13,70 +34,35 @@ public class p397_2 {
         output();
     }
 
-    private static int N, M, MAX_COST;
-    private static List<Node>[] ADJ;
-
+    private static int N;
+    private static int[] DATA;
     private static void input() {
-        N = inputProcessor.nextInt(); // 집의 수 (노드)
-        M = inputProcessor.nextInt(); // 도로의 수 (간선)
+        N = inputProcessor.nextInt();
+        DATA = new int[N];
 
-        ADJ = new ArrayList[N];
         for(int i = 0; i < N; i++) {
-            ADJ[i] = new ArrayList<>();
-        }
-
-        for(int i = 0; i < M; i++) {
-            int x = inputProcessor.nextInt();
-            int y = inputProcessor.nextInt();
-            int z = inputProcessor.nextInt();
-
-            ADJ[x].add(new Node(y, z));
-            ADJ[y].add(new Node(x, z));
-            MAX_COST += z;
-        }
-    }
-
-    private static class Node implements Comparable<Node> {
-        private final int to;
-        private final int cost;
-
-        public Node(int to, int cost) {
-            this.to = to;
-            this.cost = cost;
-        }
-
-        public int compareTo(Node o) {
-            return this.cost - o.cost;
+            DATA[i] = inputProcessor.nextInt();
         }
     }
 
     private static void pro() {
-        for(int i = 0; i < N; i++) {
-            Collections.sort(ADJ[i]);
-        }
+        int result = -1;
+        int L = 0;
+        int R = N;
 
-        Queue<Node> que = new PriorityQueue<>();
-        que.add(new Node(0, 0));
+        while(L <= R) {
+            int mid = (L + R) / 2;
 
-        int total = 0;
-        boolean[] visited = new boolean[N];
-        while(!que.isEmpty()) {
-            Node cur = que.poll();
-
-            if(visited[cur.to]) continue;
-
-            visited[cur.to] = true;
-            total += cur.cost;
-
-            for(Node next : ADJ[cur.to]) {
-                if(visited[next.to]) continue;
-
-                que.add(next);
+            if(mid == DATA[mid]) { // 고정 값인가
+                result = mid;
+                break;
             }
+
+            if(DATA[mid] < mid) L = mid + 1;
+            else R = mid - 1;
         }
 
-        // 가로등을 비활성화하여 절약할 수 있는 최대 금액을 출력 = 전체 금액 - 최소 연결 비용
-        sb.append(MAX_COST - total);
+        sb.append(result);
     }
 
     private static void output() {
