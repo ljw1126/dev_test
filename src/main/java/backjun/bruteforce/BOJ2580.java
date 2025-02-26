@@ -21,91 +21,91 @@ public class BOJ2580 {
         output();
     }
 
-    private static final int N = 9;
-    private static final long allComplete = (1 << 10) - 2;
-    private static int[][] maps;
-    private static long[] rows;
-    private static long[] cols;
-    private static long[] boxes;
-    private static List<int[]> points;
-    private static boolean finished = false;
+    private static final int completed = (1 << 10) - 2;
+
+    private static boolean finish;
+    private static int[][] board;
+    private static int[] row, col, pos;
+    private static List<int[]> targets;
 
     private static void input() {
-        maps = new int[N][N];
+        row = new int[9];
+        col = new int[9];
+        pos = new int[9];
 
-        rows = new long[N];
-        cols = new long[N];
-        boxes = new long[N]; // 서브 그리드 3 * 3
-        points = new ArrayList<>();
+        targets = new ArrayList<>();
 
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < N; j++) {
+        board = new int[9][9];
+        for(int i = 0; i < 9; i++) {
+            for(int j = 0; j < 9; j++) {
                 int v = inputProcessor.nextInt();
-                int pos = (i / 3) * 3 + (j / 3);
+
+                board[i][j] = v;
 
                 if(v == 0) {
-                    points.add(new int[] {i, j});
+                    targets.add(new int[]{i, j});
                     continue;
                 }
 
-                maps[i][j] = v;
-                rows[i] |= 1L << v;
-                cols[j] |= 1L << v;
-                boxes[pos] |= 1L << v;
+                int flag = 1 << v;
+                row[i] |= flag;
+                col[j] |= flag;
+
+                // (2, 2) = 0, (0,3) = 1, (0, 6) = 2
+                int group = (i / 3) * 3 + j / 3;
+                pos[group] |= flag;
             }
         }
     }
 
     private static void pro() {
-        backTracking(0);
+        rec(0);
     }
 
-    private static void backTracking(int idx) {
-        if(!finished && idx == points.size()) {
-            boolean isValid = true;
-            for(int i = 0; i < N; i++) {
-                for(int j = 0; j < N; j++) {
-                    int pos = (i / 3) * 3 + (j / 3);
-                    if(rows[i] != allComplete || cols[j] != allComplete || boxes[pos] != allComplete) {
-                        isValid = false;
-                        break;
-                    }
+    private static void rec(int idx) {
+        if(finish) return;
+        if(idx == targets.size()) {
+
+            for(int i = 0; i < 9; i++) {
+                if(row[i] != completed || col[i] != completed || pos[i] != completed) {
+                    return;
                 }
             }
 
-            if(isValid) {
-                finished = true;
-                for(int i = 0; i < N; i++) {
-                    for(int j = 0; j < N; j++) {
-                        sb.append(maps[i][j]).append(" ");
-                    }
-                    sb.append("\n");
+            finish = true;
+            for(int i = 0; i < 9; i++) {
+                for(int j = 0; j < 9; j++) {
+                    sb.append(board[i][j]).append(" ");
                 }
+                sb.append("\n");
             }
 
             return;
         }
-        if(finished) return;
 
-        int[] point = points.get(idx);
-        int x = point[0];
-        int y = point[1];
-        int pos = (x / 3) * 3 + (y / 3);
-        for(int i = 1; i <= N; i++) {
-            long flag = 1L << i;
-            if((rows[x] & flag) != 0 || (cols[y] & flag) != 0 || (boxes[pos] & flag) != 0) continue;
+        int[] arr = targets.get(idx);
+        int x = arr[0];
+        int y = arr[1];
+        int group = (x / 3) * 3 + y / 3;
 
-            rows[x] |= flag;
-            cols[y] |= flag;
-            boxes[pos] |= flag;
-            maps[x][y] = i;
+        for(int i = 1; i <= 9; i++) {
+            // 가로, 세로, 그룹이 맞아야지 스도쿠
+            int flag = 1 << i;
+            if((row[x] & flag) != 0) continue;
+            if((col[y] & flag) != 0) continue;
+            if((pos[group] & flag) != 0) continue;
 
-            backTracking(idx + 1);
+            row[x] |= flag;
+            col[y] |= flag;
+            pos[group] |= flag;
+            board[x][y] = i;
 
-            maps[x][y] = 0;
-            rows[x] &= ~flag;
-            cols[y] &= ~flag;
-            boxes[pos] &= ~flag;
+            rec(idx + 1);
+
+            board[x][y] = 0;
+            row[x] &= ~flag;
+            col[y] &= ~flag;
+            pos[group] &= ~flag;
         }
     }
 

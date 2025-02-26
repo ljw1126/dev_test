@@ -48,13 +48,12 @@ public class BOJ10597 {
     }
 
     /*
-        1. 1 ~ N까지의 수로 이루어진 수열 인지 검증 필요.
-            - 합계를 구한 후 빼서 0이 되면 1 ~ N까지 검증이 된다
-        2. 0이 있는 경우
+        검증의 경우 1 ~ N까지 숫자가 다 있는지 확인하면 된다
+        고로 재귀 호출시 최대값을 보낸 후 1 ~ max까지 방문 여부를 확인한다
      */
     private static void rec(int idx, int max, List<Integer> selected) {
         if(finished) return;
-        if(idx >= len) {
+        if(idx == len) {
             for(int i = 1; i <= max; i++) {
                 if(!visited[i]) return;
             }
@@ -68,7 +67,7 @@ public class BOJ10597 {
         }
 
         int a = nums[idx];
-        if(!visited[a]) {
+        if(!visited[a] && a > 0) {
             visited[a] = true;
             selected.add(a);
             rec(idx + 1, Math.max(max, a), selected);

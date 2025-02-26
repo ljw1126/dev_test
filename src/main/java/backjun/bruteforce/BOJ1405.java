@@ -18,7 +18,7 @@ import java.util.StringTokenizer;
  *     - 동 동 1/16
  *     - 동 남 1/16
  *     - 동 북 1/16
- *     - .. 총 12개가 구해지고 더하면 12/16 = 3/4 = 0.75가 된다
+ *     - .. 1/16 확률의 경우가 총 12개 구해지고 더하면 12/16 = 3/4 = 0.75가 된다
  */
 public class BOJ1405 {
     private static StringBuilder sb = new StringBuilder();
