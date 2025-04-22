@@ -1,4 +1,4 @@
-package its.codingtest;
+package its.codingtest.sort;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 두 배열의 원소 교체
+ */
+public class p182 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -18,46 +22,41 @@ public class Practice {
         output();
     }
 
-    private static int N;
+    private static int N, K;
+    private static Integer[] A, B;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt(); // 원소 수
+        K = inputProcessor.nextInt(); // 최대 K번 바꿔치기 연산을 수행할 수 있다
+
+        A = new Integer[N + 1];
+        B = new Integer[N + 1];
+
+        for (int i = 1; i <= N; i++) {
+            A[i] = inputProcessor.nextInt();
+        }
+
+        for (int i = 1; i <= N; i++) {
+            B[i] = inputProcessor.nextInt();
+        }
     }
 
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        Arrays.sort(A, 1, N + 1);
+        Arrays.sort(B, 1, N + 1, Collections.reverseOrder());
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
-
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
-
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
+        for (int i = 1; i <= K; i++) {
+            if (A[i] < B[i]) {
+                int temp = A[i];
+                A[i] = B[i];
+                B[i] = temp;
+            } else {
+                break;
             }
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        Integer result = Arrays.stream(A).reduce(0, Integer::sum);
+        sb.append(result);
     }
 
     private static void output() {
@@ -68,6 +67,7 @@ public class Practice {
             throw new RuntimeException(e);
         }
     }
+
 
     private static class InputProcessor {
         private BufferedReader br;

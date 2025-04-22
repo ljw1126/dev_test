@@ -1,14 +1,19 @@
-package its.codingtest;
+package its.codingtest.dp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 편집거리
+ * - 직접 풀이 x
+ * - 최소 편집 거리 구하는 알고리즘이 따로 있었음
+ * - O(NM) // 각 문자열의 길이, 글자가 최대 5,000이니 25 * 10^6
+ */
+public class p382 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -18,46 +23,46 @@ public class Practice {
         output();
     }
 
-    private static int N;
+    private static String A, B;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        A = inputProcessor.nextLine().trim();
+        B = inputProcessor.nextLine().trim();
     }
 
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        int col = A.length();
+        int row = B.length();
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
+        int[][] dp = new int[row + 1][col + 1];
 
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
+        // 삽입
+        for (int i = 1; i <= col; i++) {
+            dp[0][i] = i;
+        }
 
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
+        // 삭제
+        for (int i = 1; i <= row; i++) {
+            dp[i][0] = i;
+        }
 
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
+        // 왼쪽 위 : 교체, 왼쪽 : 삭제, 위 : 삽입
+        // 세 가지 방식 중에 최소 값을 가지는 방식으로 처리하면 dp[row][col]에 최소 편집 거리가 기록됨
+        for (int i = 1; i <= row; i++) { // 문자열 B
+            for (int j = 1; j <= col; j++) { // 문자열 A
+                char a = A.charAt(j - 1); // *i, j 주의
+                char b = B.charAt(i - 1);
+                if (a == b) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                    continue;
+                }
 
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
+                int min = Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1]));
+                dp[i][j] = 1 + min;
             }
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        sb.append(dp[row][col]);
     }
 
     private static void output() {

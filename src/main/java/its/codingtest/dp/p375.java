@@ -1,63 +1,93 @@
-package its.codingtest;
+package its.codingtest.dp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 금광
+ * <p>
+ * 입력
+ * 2
+ * 3 4
+ * 1 3 3 2 2 1 4 1 0 6 4 7
+ * 4 4
+ * 1 3 1 5 2 2 4 1 5 0 2 3 0 6 1 2
+ * <p>
+ * 출력
+ * 19
+ * 16
+ */
+public class p375 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
     public static void main(String[] args) {
         input();
-        pro();
         output();
     }
 
-    private static int N;
+    private static int T, N, M;
+    private static int[][] DATA;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        T = inputProcessor.nextInt();
+        while (T > 0) {
+            N = inputProcessor.nextInt();
+            M = inputProcessor.nextInt();
+
+            DATA = new int[N][M];
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < M; j++) {
+                    DATA[i][j] = inputProcessor.nextInt();
+                }
+            }
+
+            pro();
+
+            T -= 1;
+        }
     }
 
+    // 오른쪽 위, 오른쪽, 오른쪽 아래
+    private static final int[][] DIR = {
+            {-1, 1},
+            {0, 1},
+            {1, 1}
+    };
+
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        bottomUp();
+    }
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
+    private static void bottomUp() {
+        // 초기화
+        int[][] dp = new int[N][M];
+        for (int i = 0; i < N; i++) {
+            dp[i][0] = DATA[i][0];
+        }
 
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
+        for (int col = 1; col < M; col++) { // 열
+            for (int row = 0; row < N; row++) { // 행
+                int leftUp = row == 0 ? 0 : dp[row - 1][col - 1];
+                int left = dp[row][col - 1];
+                int leftDown = row == N - 1 ? 0 : dp[row + 1][col - 1];
 
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
+                int max = Math.max(leftUp, Math.max(left, leftDown));
+                dp[row][col] = DATA[row][col] + max;
             }
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        int result = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                result = Math.max(result, dp[i][j]);
+            }
+        }
+        sb.append(result).append("\n");
     }
 
     private static void output() {

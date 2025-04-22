@@ -1,4 +1,4 @@
-package its.codingtest;
+package its.codingtest.dp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,7 +8,13 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 못 생긴 수
+ * - 직접 풀이 못함
+ * - DP와 three pointer
+ * - DP가 이미 처리된 결과값을 가지고 연산 속도 높이는 거라 이 문제도 해당
+ */
+public class p381 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 

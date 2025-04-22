@@ -1,14 +1,21 @@
-package its.codingtest;
+package its.codingtest.graph;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 특정 거리의 도시 찾기 (실2)
+ */
+public class p339 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -18,46 +25,58 @@ public class Practice {
         output();
     }
 
-    private static int N;
+    private static int N, M, K, X;
+    private static List<Integer>[] ADJ;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt(); // 도시의 개수 (노드)
+        M = inputProcessor.nextInt(); // 도로의 개수 (간선)
+        K = inputProcessor.nextInt(); // 거리 정보
+        X = inputProcessor.nextInt(); // 출발 도시
+
+        ADJ = new ArrayList[N + 1];
+        for (int i = 0; i <= N; i++) {
+            ADJ[i] = new ArrayList<>();
+        }
+
+        for (int i = 1; i <= M; i++) {
+            int from = inputProcessor.nextInt();
+            int to = inputProcessor.nextInt();
+            ADJ[from].add(to);
+        }
     }
 
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        Deque<Integer> queue = new ArrayDeque<>();
+        queue.add(X);
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
+        int[] dist = new int[N + 1];
+        Arrays.fill(dist, -1);
+        dist[X] = 0;
 
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
 
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
+            for (int next : ADJ[cur]) {
+                if (dist[next] != -1) continue;
 
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
+                dist[next] = dist[cur] + 1;
+                queue.add(next);
             }
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        boolean check = false;
+        for (int i = 1; i <= N; i++) {
+            if (dist[i] == K) {
+                sb.append(i).append("\n");
+                check = true;
+            }
+        }
+
+        if (!check) {
+            sb.setLength(0);
+            sb.append(-1);
+        }
     }
 
     private static void output() {
@@ -68,6 +87,7 @@ public class Practice {
             throw new RuntimeException(e);
         }
     }
+
 
     private static class InputProcessor {
         private BufferedReader br;

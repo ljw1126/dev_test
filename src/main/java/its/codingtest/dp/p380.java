@@ -1,14 +1,15 @@
-package its.codingtest;
+package its.codingtest.dp;
+
+import org.bouncycastle.util.Arrays;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Practice {
+public class p380 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -19,45 +20,44 @@ public class Practice {
     }
 
     private static int N;
+    private static int[] POWER;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt();
+        POWER = new int[N];
+        for (int i = 0; i < N; i++) {
+            POWER[i] = inputProcessor.nextInt();
+        }
     }
 
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        int l = 0, r = N - 1;
+        while (l < r) {
+            int temp = POWER[l];
+            POWER[l] = POWER[r];
+            POWER[r] = temp;
+            l += 1;
+            r -= 1;
+        }
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
+        int[] dp = new int[N]; // dp[i] = i번째 수를 마지막으로 하는 수열을 길이, 가장 긴 오름차순 수열
+        Arrays.fill(dp, 1); // 자기 자신 1
 
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
-
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
+        // 연산을 반복하지 않기 위해 dp 상향식 사용
+        for (int i = 1; i < N; i++) {
+            for (int j = 0; j < i; j++) {
+                if (POWER[j] < POWER[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
             }
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        int max = 0;
+        for (int i = 0; i < N; i++) {
+            max = Math.max(max, dp[i]);
+        }
+
+        sb.append(N - max);
     }
 
     private static void output() {

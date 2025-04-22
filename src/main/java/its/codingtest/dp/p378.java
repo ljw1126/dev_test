@@ -1,14 +1,22 @@
-package its.codingtest;
+package its.codingtest.dp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 백준 - 퇴사(실3)
+ * https://www.acmicpc.net/problem/14501
+ * <p>
+ * - 직접풀이 못함
+ * - dp[i] = Math.max(dp[t[i] + i] + p[i], maxValue)
+ * 이때 t[i] + i <= N + 1 인 경우에만 오늘이 N = 10이고, i = 8, t = 3일때
+ * 상담일에서 당일을 포함해야하니깐 dp[N + 2]로 칸을 늘리고 하는게 연산이 편함
+ */
+public class p378 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -19,45 +27,41 @@ public class Practice {
     }
 
     private static int N;
+    private static int[] T, P;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt();
+        T = new int[N + 1];
+        P = new int[N + 1];
+
+        for (int i = 1; i <= N; i++) {
+            T[i] = inputProcessor.nextInt(); // 상담 일수
+            P[i] = inputProcessor.nextInt(); // 페이
+        }
     }
 
+    // i번째 페이 + P[T[i]] 페이
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        int[] dp = new int[N + 2];
+        int max = 0;
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
+        for (int i = N; i > 0; i--) {
+            int day = T[i] + i; // 오늘 i일부터 T[i]까지 퇴사 전이라면 페이를 받을 수 있다
 
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
-
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
+            if (day <= N + 1) { // 당일 포함이니깐
+                dp[i] = Math.max(max, dp[day] + P[i]);
+                max = dp[i];
+            } else {
+                dp[i] = max;
             }
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        int result = 0;
+        for (int i = 1; i <= N; i++) {
+            result = Math.max(result, dp[i]);
+        }
+
+        sb.append(result);
     }
 
     private static void output() {

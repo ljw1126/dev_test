@@ -1,14 +1,20 @@
-package its.codingtest;
+package its.codingtest.sort;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 국영수 (실4)
+ * https://www.acmicpc.net/problem/10825
+ */
+public class p359 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -19,45 +25,54 @@ public class Practice {
     }
 
     private static int N;
+    private static List<Student> STUDENTS;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt();
+        STUDENTS = new ArrayList<>();
+
+        for (int i = 1; i <= N; i++) {
+            String name = inputProcessor.next();
+            int kor = inputProcessor.nextInt();
+            int eng = inputProcessor.nextInt();
+            int math = inputProcessor.nextInt();
+
+            STUDENTS.add(new Student(name, kor, eng, math));
+        }
     }
 
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        Collections.sort(STUDENTS);
+        for (Student s : STUDENTS) {
+            sb.append(s.name).append("\n");
+        }
+    }
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
+    private static class Student implements Comparable<Student> {
+        private final String name;
+        private final int kor;
+        private final int eng;
+        private final int math;
 
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
-
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
-            }
+        public Student(String name, int kor, int eng, int math) {
+            this.name = name;
+            this.kor = kor;
+            this.eng = eng;
+            this.math = math;
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        @Override
+        public int compareTo(Student o) {
+            if (this.kor == o.kor && this.eng == o.eng && this.math == o.math) {
+                return this.name.compareTo(o.name);
+            } else if (this.kor == o.kor && this.eng == o.eng) {
+                return o.math - this.math; // 수학 감소하는 순서로
+            } else if (this.kor == o.kor) {
+                return this.eng - o.eng; // 국어가 같으면 영어 점수가 증가하는 순서로
+            }
+
+            return Integer.compare(o.kor, this.kor); // 국어 점수가 감소하는 순서
+        }
     }
 
     private static void output() {
@@ -68,6 +83,7 @@ public class Practice {
             throw new RuntimeException(e);
         }
     }
+
 
     private static class InputProcessor {
         private BufferedReader br;

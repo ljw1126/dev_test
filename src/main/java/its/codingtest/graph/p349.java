@@ -1,14 +1,17 @@
-package its.codingtest;
+package its.codingtest.graph;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 연산자 끼워넣기 (실1)
+ * https://www.acmicpc.net/problem/14888
+ */
+public class p349 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -19,45 +22,64 @@ public class Practice {
     }
 
     private static int N;
+    private static int MIN_VALUE, MAX_VALUE;
+    private static int[] DATA;
+    private static int[] OPERATORS;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt(); // 수의 개수
+        DATA = new int[N];
+        for (int i = 0; i < N; i++) {
+            DATA[i] = inputProcessor.nextInt();
+        }
+
+        OPERATORS = new int[4];
+        for (int i = 0; i < 4; i++) {
+            OPERATORS[i] = inputProcessor.nextInt();
+        }
+
+        MIN_VALUE = Integer.MAX_VALUE;
+        MAX_VALUE = Integer.MIN_VALUE;
     }
 
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        rec(1, DATA[0]);
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
+        sb.append(MAX_VALUE)
+                .append("\n")
+                .append(MIN_VALUE);
+    }
 
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
-
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
-            }
+    private static void rec(int idx, int value) {
+        if (idx == N) {
+            MIN_VALUE = Math.min(MIN_VALUE, value);
+            MAX_VALUE = Math.max(MAX_VALUE, value);
+            return;
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        if (OPERATORS[0] != 0) { // 덧셈
+            OPERATORS[0] -= 1;
+            rec(idx + 1, value + DATA[idx]);
+            OPERATORS[0] += 1;
+        }
+
+        if (OPERATORS[1] != 0) { // 뺄셈
+            OPERATORS[1] -= 1;
+            rec(idx + 1, value - DATA[idx]);
+            OPERATORS[1] += 1;
+        }
+
+        if (OPERATORS[2] != 0) { // 곱셈
+            OPERATORS[2] -= 1;
+            rec(idx + 1, value * DATA[idx]);
+            OPERATORS[2] += 1;
+        }
+
+        if (OPERATORS[3] != 0) { // 나눗셈
+            OPERATORS[3] -= 1;
+            rec(idx + 1, value / DATA[idx]);
+            OPERATORS[3] += 1;
+        }
     }
 
     private static void output() {
@@ -68,6 +90,7 @@ public class Practice {
             throw new RuntimeException(e);
         }
     }
+
 
     private static class InputProcessor {
         private BufferedReader br;

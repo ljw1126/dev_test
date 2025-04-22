@@ -1,4 +1,4 @@
-package its.codingtest;
+package its.codingtest.shortpath;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,7 +8,24 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Practice {
+/**
+ * 정확한 순위 - K대회 문제
+ * - 플로이드 워셜 O(V^3)
+ * - A에서 B로 도달이 가능하거나, B에서 A로 도달이 가능하면 '성적 비교'가 가능하다
+ * <p>
+ * <p>
+ * 입력
+ * 6 6
+ * 1 5
+ * 3 4
+ * 4 2
+ * 4 6
+ * 5 2
+ * 5 4
+ * <p>
+ * 출력 1
+ */
+public class p386 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -18,46 +35,52 @@ public class Practice {
         output();
     }
 
-    private static int N;
+    private static final int MAX_DIST = 501;
+    private static int N, M;
+    private static int[][] FLOYED;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt(); // 학생들의 수
+        M = inputProcessor.nextInt(); // 성적을 비교한 횟수(간선)
+
+        FLOYED = new int[N + 1][N + 1];
+        for (int i = 1; i <= N; i++) {
+            Arrays.fill(FLOYED[i], MAX_DIST);
+            FLOYED[i][i] = 0;
+        }
+
+        for (int i = 1; i <= M; i++) {
+            int from = inputProcessor.nextInt();
+            int to = inputProcessor.nextInt();
+
+            FLOYED[from][to] = 1;
+        }
     }
 
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
+        for (int k = 1; k <= N; k++) {
+            for (int i = 1; i <= N; i++) {
+                for (int j = 1; j <= N; j++) {
+                    if (i == j) continue;
 
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
-
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
-
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
+                    FLOYED[i][j] = Math.min(FLOYED[i][j], FLOYED[i][k] + FLOYED[k][j]);
+                }
             }
         }
 
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        int result = 0;
+        for (int i = 1; i <= N; i++) {
+            int cnt = 0;
+            for (int j = 1; j <= N; j++) {
+                if (FLOYED[i][j] != MAX_DIST || FLOYED[j][i] != MAX_DIST) cnt++;
+            }
+
+            if (cnt == N) {
+                result += 1;
+            }
+        }
+
+        sb.append(result);
     }
 
     private static void output() {

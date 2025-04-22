@@ -1,14 +1,18 @@
-package its.codingtest;
+package its.codingtest.sort;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.StringTokenizer;
+import java.util.stream.IntStream;
 
-public class Practice {
+/**
+ * 위에서 아래로
+ */
+public class p178 {
     private static StringBuilder sb = new StringBuilder();
     private static InputProcessor inputProcessor = new InputProcessor();
 
@@ -19,45 +23,27 @@ public class Practice {
     }
 
     private static int N;
+    private static int[] DATA;
 
     private static void input() {
-        N = inputProcessor.nextInt(); // 1 ~ 1000, n번째 못 생긴 수를 찾는다
+        N = inputProcessor.nextInt();
+
+        DATA = new int[N + 1];
+        for (int i = 1; i <= N; i++) {
+            DATA[i] = inputProcessor.nextInt();
+        }
     }
 
+    /* https://parkseryu.tistory.com/156
+     * primitive 타입은 오름차순 정렬 후 거꾸로 출력하는 방법 밖에 없다
+     * wrapper클래스는 Collections.
+     */
     private static void pro() {
-        int[] dp = new int[N + 1];
-        dp[0] = 1;
-
-        int i2 = 0;
-        int i3 = 0;
-        int i5 = 0;
-
-        int next2 = 2;
-        int next3 = 3;
-        int next5 = 5;
-
-        // if-else가 아닌 이유는 2 * 3, 3 * 2 중복 되는 경우 갱신을 해줘야 하기 때문
-        for (int i = 1; i <= N; i++) {
-            dp[i] = Math.min(next2, Math.min(next3, next5));
-
-            if (dp[i] == next2) {
-                i2 += 1;
-                next2 = dp[i2] * 2;
-            }
-
-            if (dp[i] == next3) {
-                i3 += 1;
-                next3 = dp[i3] * 3;
-            }
-
-            if (dp[i] == next5) {
-                i5 += 1;
-                next5 = dp[i5] * 5;
-            }
-        }
-
-        sb.append(dp[N - 1]);
-        System.out.println(Arrays.toString(dp));
+        IntStream.of(DATA)
+                .skip(1)
+                .boxed()
+                .sorted(Comparator.reverseOrder())
+                .forEach(v -> sb.append(v).append(" "));
     }
 
     private static void output() {
@@ -68,6 +54,7 @@ public class Practice {
             throw new RuntimeException(e);
         }
     }
+
 
     private static class InputProcessor {
         private BufferedReader br;
